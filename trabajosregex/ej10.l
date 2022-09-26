@@ -2,6 +2,8 @@
 // Definiciones de variables o regulares
 int caracteresBlancos = 0;
 int cifrado;
+
+%x COM 
 //void convertirMinus(char*);
 %}
 
@@ -15,8 +17,7 @@ mayus [A-Z]
 palabra ({letra}|{digito})+
 
 %%
-{palabra}({espacio})*\n    {printWord(yytext);}
-^{espacio}*{palabra}{1}     {printWord(yytext);}
+
 .|\n {;}
 %%
  // Rutinas de usuario
