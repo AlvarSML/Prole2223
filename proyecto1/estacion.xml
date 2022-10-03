@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<estacion xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="estacion.xsd">
+  <pistas>
+  
+    <pista num="1">
+      <nombre>raca</nombre>
+      <longitud>4.3</longitud>
+      <dificultad>verde</dificultad>
+      <remonteAcceso>2</remonteAcceso>
+      <abierta>true</abierta>
+    </pista>
+    
+    <pista num="2">
+      <nombre>truchas</nombre>
+      <longitud>2</longitud>
+      <dificultad>verde</dificultad>
+     <remonteAcceso>2</remonteAcceso>
+     <abierta>true</abierta>
+      <canon/>
+      <slalom/>
+    </pista>
+    
+    <pista num="3">
+    
+      <nombre>aguila</nombre>
+      <longitud>3</longitud>
+      <dificultad>verde</dificultad>
+      <remonteAcceso>3</remonteAcceso>
+      <abierta>false</abierta>
+      <snowpark/>
+    </pista>
+  </pistas>
+  
+  <remontes>
+    
+    <remonte num="1">
+      <tipo>telesilla</tipo>
+      <plazas>4</plazas>
+    </remonte>
+    
+    <remonte num="2">
+      <tipo>telesilla</tipo>
+      <plazas>2</plazas>
+    </remonte>
+    
+    <remonte num="3">
+      <tipo>percha</tipo>
+    </remonte>
+    
+    <remonte num="4">
+        <tipo>telesilla</tipo>
+        <plazas>4</plazas>
+    </remonte>
+    
+  </remontes>
+  
+  <tiendas>
+      
+      <tienda id="1">
+            <nombre>Materiales</nombre>
+            <tipoTienda>taller</tipoTienda>
+            <plaza>1</plaza>
+            <propietario>Juan</propietario>
+            <reparacion num="1">
+                <nomcliente></nomcliente>
+                <reparado></reparado>
+                <precio>gratis</precio>
+            </reparacion>
+            
+      </tienda>
+      
+      <tienda id="2">
+          <nombre>Ropas</nombre>
+          <tipoTienda>ropa</tipoTienda>
+          <plaza>2</plaza>
+          <propietario>Joan</propietario>
+      </tienda>
+      
+      <tienda id="3">
+          <nombre>Comidas</nombre>
+          <tipoTienda>alimentacion</tipoTienda>
+          <plaza>3</plaza>
+          <propietario>luisma</propietario>
+          <cerrada/>
+      </tienda>
+      
+  </tiendas>
+  
+  <hoteles>
+      
+      <hotel>
+          <nombrehotel>hotel los llanos</nombrehotel>
+          <contacto>
+              <numero>984834593</numero>
+              <email>losllanos@gmail.com</email>
+          </contacto>
+      </hotel>
+      
+      <hotel>
+          <nombrehotel>hotel abeto</nombrehotel>
+          <contacto>
+              <numero>984376593</numero>
+              <email>abeto@gmail.com</email>
+          </contacto>
+          <cerrado/>
+      </hotel>
+      
+  </hoteles>
+  
+  <taquillas>
+      
+      <taquilla id="1">
+          <empleados>3</empleados>
+      </taquilla>
+      
+      <taquilla id="2">
+          <cerrada/>
+      </taquilla>
+      
+  </taquillas>
+  
+  <escuelas>
+   
+      <escuela>
+        <nombre>Escola</nombre>
+        <modalidad tipo="ski"/>
+        <modalidad tipo="snowboard"/>
+        <profe id="1"/>
+        <profe id="2"/>
+      </escuela>
+      
+  </escuelas>
+  
+  <profesores>
+      
+      <profesor id="1">
+          <nombre>marcos</nombre>
+          <apellidos>dfsdfsd</apellidos>
+          <dni>22761876A</dni>
+          <enseña>ski</enseña>
+      </profesor>
+      
+      <profesor id="2">
+          <nombre>marta</nombre>
+          <apellidos>dfsdfsd</apellidos>
+          <dni>22761876X</dni>
+          <enseña>ski</enseña>
+      </profesor>
+      
+  </profesores>
+  
+  <almacenes>
+      
+      <almacen inventario="234">
+          <numalmacen>1</numalmacen>
+            <vehiculos/>
+      </almacen>
+      
+      <almacen inventario="164">
+          <numalmacen>2</numalmacen>
+            <material/>
+      </almacen>
+      
+  </almacenes>
+  
+  <parking>
+      <plazas>200</plazas>
+      <reservadas>30</reservadas>
+  </parking>
+    
+  <enfermeria>
+  
+      <telefono>942934613</telefono>
+      
+      <enfermeros>
+          
+          <enfermero id="1">
+              <nombre>paulo</nombre>
+              <dni>75489273A</dni>
+              <tipomedico>
+                <enfermero/>
+              </tipomedico>
+          </enfermero>
+          
+          <enfermero id="2">
+              <nombre>sofia</nombre>
+              <dni>42338853G</dni>
+             <tipomedico>
+                <rescate/>
+              </tipomedico>
+          </enfermero>
+          
+      </enfermeros>
+      
+      <emergencias>
+      
+        <caso num="1" enfermero="1">
+          <dia>2000-12-12</dia>
+          <descripcion>se ha rescaado a <nombre>juan luis</nombre> en la pista <pista>1</pista>con una rotura de radio</descripcion>
+        </caso>
+        
+        <caso num="2" enfermero="2">
+          <dia>2000-12-12</dia>
+          <descripcion>se ha rescaado a <nombre>juan luis</nombre> en la pista <pista>1</pista>con una rotura de radio</descripcion>
+        </caso>
+        
+      </emergencias>
+      
+  </enfermeria>
+  
+  <alquileres>
+      
+      <alquiler num="1">
+          <cliente>
+              <nombre>asdasd</nombre>
+              <apellidos>asdas asdda</apellidos>
+              <dni>22761906W</dni>
+          </cliente>
+          <material tipo="ski"/>
+          <fechai>2000-12-12</fechai>
+          <fechaf>2001-01-01</fechaf>
+          <precio>30.5</precio>
+      </alquiler>
+      
+      <alquiler num="2">
+          <cliente>
+              <nombre>asdasd</nombre>
+              <apellidos>asdas asdda</apellidos>
+              <dni>22761906W</dni>
+          </cliente>
+          <material tipo="snowboard"/>
+          <fechai>2000-12-12</fechai>
+          <fechaf>2001-01-01</fechaf>
+          <precio>30.5</precio>
+      </alquiler>
+      
+  </alquileres>
+  
+  <clases>
+   
+      <alumno id="1">
+        <nombre></nombre>
+        <apellidos></apellidos>
+        <dni>22761906W</dni>
+        <profesor id="2"/>
+        <nivel>bajo</nivel>
+        <fechai>2000-12-12</fechai>
+        <fechaf>2000-12-12</fechaf>
+        <precio>12.45</precio>
+      </alumno>
+      
+  </clases>
+  
+  <pases>
+  
+      <precios>
+      
+        <tpase tipo="estandard">
+          <paseprecio periodo="diario">30.0</paseprecio>
+          <completo/>
+        </tpase>
+        
+        <tpase tipo="principiante">
+          <paseprecio periodo="diario">20.0</paseprecio>
+          <paseprecio periodo="semanal">30.0</paseprecio>
+          <pistas>1 2 3 4</pistas>
+        </tpase>
+        
+        <tpase tipo="federado">
+          <paseprecio periodo="temporada">10.0</paseprecio>
+          <completo/>
+        </tpase>
+        
+      </precios>
+      
+      <pase id="1">
+          <nombre></nombre>
+          <apellidos></apellidos>
+          <dni>22761906W</dni>
+          <duracion>3</duracion>
+          <diasRestantes>2</diasRestantes>
+          <seguro/>
+      </pase>
+      
+  </pases>
+  
+  <competiciones>
+  
+      <competicion num="1" modalidad="snowboard" estilo="freestyle"> 
+            <dia>2000-12-12</dia>
+            <horainicio>10:30:00</horainicio>
+            
+           <competidores>
+           
+              <competidor dorsal="1">
+                  <nombre></nombre>
+                  <apellidos></apellidos>
+                  <puntuacion>3 4 5 6</puntuacion>
+                  <posicion>3</posicion>
+                  <tiempo>04:23:01</tiempo>
+              </competidor>
+              
+          </competidores>
+          
+      </competicion>
+      
+  </competiciones>
+
+</estacion>
