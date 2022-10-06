@@ -4,7 +4,7 @@ if [ $# -ge 1 ]; then
     flexfile=$1
     outputfile="defaultLexCCompilation"
 
-    res = $(flex $flexfile)
+    res=$(flex $flexfile)
 
     if [ $# -ge 2 ]; then
         outputfile=$2
