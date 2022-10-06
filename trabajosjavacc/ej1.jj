@@ -1,0 +1,44 @@
+PARSER_BEGIN(eje1)
+
+public class eje1 {
+    public static void main(String args[]) throws java.io.FileNotFoundException {
+    
+        testTokenManager tkmngr;
+        if ( args.length < 1 ) {
+            tkmngr = new testTokenManager( new SimpleCharStream(System.in) );
+        } else {
+            tkmngr = new testTokenManager( 
+            new SimpleCharStream( new java.io.FileInputStream(args[0]),0,0 ) 
+        );
+        };
+
+        Token tk;
+
+        if ( args.length < 1 ) {
+            System.out.print("Enter Expression: ");
+            System.out.flush();
+        };
+        
+        try {
+            while ( (tk = tkmngr.getNextToken()).kind != EOF ) 
+                System.out.println("<"+tokenKindString(tk.kind)+": \""+tk.image+"\">");
+        } catch (TokenMgrError x) {
+            System.out.println("Exiting.");
+            throw x;
+        };
+
+
+    }
+}
+
+PARSER_END(eje1)
+
+TOKEN_MGR_DECLS:
+{
+    static int lineas=0;
+}
+
+TOKEN:
+{
+    <LINEA: (~["\n"])*"\n" > { if (lengthOfMatch < 31) lineas++;}
+}
