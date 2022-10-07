@@ -1,9 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<parte1 
-    dasd="asd" 
-    asd="123">
-<!-- comentario 1-->
-    contenido
-        <!-- commentario 2 <! -->
-<etiq ></etiq><!-- asdf -->
-</parte1>
+<parte1_das1 dasd231 = "asd" asd="12
+sda
+asd3"
+vacio="">
+</parte1_das1>

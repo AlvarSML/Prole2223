@@ -2,11 +2,11 @@
 public class eje1 implements eje1Constants {
     public static void main(String args[]) throws java.io.FileNotFoundException {
 
-        testTokenManager tkmngr;
+        eje1TokenManager tkmngr;
         if ( args.length < 1 ) {
-            tkmngr = new testTokenManager( new SimpleCharStream(System.in) );
+            tkmngr = new eje1TokenManager( new SimpleCharStream(System.in) );
         } else {
-            tkmngr = new testTokenManager(
+            tkmngr = new eje1TokenManager(
             new SimpleCharStream( new java.io.FileInputStream(args[0]),0,0 )
         );
         };
