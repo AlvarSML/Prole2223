@@ -3,6 +3,10 @@
 <!-- lo de arriba lo procesa sin contar -->
 
 <eje>
+
+  <!-- esto lo voy a contar como una de inicio y una de cierre -->
+  <ns1:etiq22 xmlns:ns1="http://pisuergaasdasd.inf.ubu.es/" at2="val2" at3="val3"></ns1:etiq22>
+
   <etiq1 atr1="v1" atr2='val2' atr3="val3">
   texto y mas texto
   </etiq1> <!-- una etiqueta de cierre-->
@@ -12,7 +16,7 @@
   <etiqueta2/><!-- un elemento vacío -->
 
   <!-- esto lo voy a contar como una de inicio y una de cierre -->
-  <ns1:etiq2 xmlns:ns1="http://pisuerga.inf.ubu.es/" at2="val2" at3="val3"></ns1:etiq2>
+  <ns1:etiq2 xmlns:ns1="http://pisuergadddddddddddddddd.inf.ubu.es/" at2="val2" at3="val3"></ns1:etiq2>
 
   <![CDATA[
   <etiq2 > <!-- esta etiqueta y este comentario no los voy a contar

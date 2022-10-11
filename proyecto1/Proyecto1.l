@@ -135,8 +135,11 @@ attr_val        ({blanco}*["']{texto}["'])
 attr_namespace  ({palabra}:{palabra})
 namespace       ({blanco}*(xmlns:){palabra})
 
+texto_libre     ([^<]*)
+
 %%
-<INICIO>{cdata_ini}     {BEGIN(CDATA);/*Cosas de cdata*/}
+ /* CDATA Puede ser un contenido flag vacia a 0*/
+<INICIO>{cdata_ini}     {vacio = 0; BEGIN(CDATA);/*Cosas de cdata*/}
 <CDATA>{cdata_close}    {BEGIN(INICIO);/*Fin del cdata*/}
 
 <INICIO>{pi_ini}        {entradaPInstruction();BEGIN(PINS);}
@@ -151,8 +154,10 @@ namespace       ({blanco}*(xmlns:){palabra})
 <COMM>{comm_close}      {BEGIN(INICIO);}
 
  /* Procesamiento de etiquetas */
+ /* Si hay un texto es que se esta llenando un bloque falg vacio a 0 */
 <INICIO>{
     {apertura_izq}      {BEGIN(INI_TAG);}
+    {texto_libre}       {vacio = 0;}
 }
 
  /* Una vez capturada la apertura de una etiqueta se identifica el tipo */
@@ -164,6 +169,7 @@ namespace       ({blanco}*(xmlns:){palabra})
 }
 
 <TAG_END>{
+    {palabra}:  {;}
     {tag_name}  {transicionFinEtiqueta(yytext);}
 }
 
@@ -294,11 +300,13 @@ int transicionAutoFinEtiqueta() {
 */
 int transicionFinEtiqueta(char* etiqueta) {
     printf("%s\n[</TAG>]->%s %s Finalizando la etiqueta \"%s\" con %d atributos %s\n",BOLDRED,RESET,RED,etiqueta,nAttrs,RESET);
-    printf("-- '%s' -- '%s' -- %d -- %d \n",etiqueta,etiquetaActual,vacio,nVacios);
+    printf("-- '%s' == '%s' -- %d -- %d \n",etiqueta,etiquetaActual,vacio,nVacios);
     if ((strcmp(etiqueta,etiquetaActual) == 0) && (vacio == 1)){
         nVacios++;
+        printf("@@@ La etiqueta '%s' esta vacia @@@\n",etiqueta);
     } else {
         // Reset de la flag de etiqueta vacia
+        printf("### La etiqueta '%s' no esta vacia ###\n",etiqueta);
         vacio = 1;
     }
 
