@@ -1,18 +1,17 @@
-PARSER_BEGIN(eje1)
+PARSER_BEGIN(ej13)
 
-public class eje1 {
+public class ej13 {
     public static void main(String args[]) throws java.io.FileNotFoundException {
-    
-        eje1TokenManager tkmngr;
-        if ( args.length < 1 ) {
-            tkmngr = new eje1TokenManager( new SimpleCharStream(System.in) );
-        } else {
-            tkmngr = new eje1TokenManager( 
-            new SimpleCharStream( new java.io.FileInputStream(args[0]),0,0 ) 
-        );
-        };
-
+        ej13TokenManager tkmngr;
         Token tk;
+
+        if ( args.length < 1 ) {
+            tkmngr = new ej13TokenManager( new SimpleCharStream(System.in) );
+        } else {
+            tkmngr = new ej13TokenManager( 
+            new SimpleCharStream( new java.io.FileInputStream(args[0]),0,0 ) 
+            );
+        };        
 
         if ( args.length < 1 ) {
             System.out.print("Enter Expression: ");
@@ -28,16 +27,31 @@ public class eje1 {
         };
 
     }
+
+    public static void calcular() {
+        System.out.println("Tengo un numero con base");
+    }
 }
 
-PARSER_END(eje1)
+PARSER_END(ej13)
 
 TOKEN_MGR_DECLS:
 {
-    static int lineas=0;
+    static String numero;
+    static String base;
 }
 
 TOKEN:
 {
-    <LINEA: (~["\n"])*"\n" > { if (lengthOfMatch < 31) lineas++;}
+    <NUMERO: (["0"-"9","A"-"F","a"-"f"])+> {numero=image.toString();}
+|   <BASE: (["b","B","o","O","d","D","x","X"]|("("("2"|"8"|"16")")"))> {calcular();}
 }
+
+SKIP:
+{
+    <BLANCO: ["\b"]>
+|   <TABULADOR: ["\t"]>
+|   <INTRO: ["\n"]>
+}
+
+
