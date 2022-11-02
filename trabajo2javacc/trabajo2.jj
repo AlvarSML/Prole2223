@@ -1,0 +1,202 @@
+/*
+- El lenguaje de alto nivel es muy sencillo. 
+[] No tiene declaración de tipos.
+[] El único tipo que permite es el tipo entero.
+[] En las condiciones de las instrucciones if y while el valor 0 se interpreta como falso y cualquier 
+otro valor como cierto.
+[] Los operadores de incremento/decremento '++' y '--' hacen que la variable 
+aumente/decremente su valor en un entero.
+
+[] Los comentarios en el lenguaje serán en línea comenzando con "!".
+
+[] Debe ser capaz de leer por entrada estándar (teclado) y por un fichero que se 
+le pase por argumento.
+
+
+*/
+
+PARSER_BEGIN(trabajo2)
+public class trabajo2 {
+    public static void main(String args[]) throws java.io.FileNotFoundException {
+        trabajo2TokenManager tkmngr;
+        Token tk;
+
+        if ( args.length < 1 ) {
+            tkmngr = new trabajo2TokenManager( new SimpleCharStream(System.in) );
+        } else {
+            tkmngr = new trabajo2TokenManager( 
+            new SimpleCharStream( new java.io.FileInputStream(args[0]),0,0 ) 
+            );
+        };        
+
+        if ( args.length < 1 ) {
+            System.out.print("Enter Expression: ");
+            System.out.flush();
+        };
+        
+        try {
+            while ( (tk = tkmngr.getNextToken()).kind != EOF ) ;
+        } catch (TokenMgrError x) {
+            System.out.println("Exiting.");
+            throw x;
+        };
+    }
+}
+PARSER_END(trabajo2)
+
+TOKEN_MGR_DECLS:
+{
+
+}
+
+TOKEN:
+{
+    <ASIGNACION: "=">
+|   <COMPARACION: "==">
+|   <SUMA: "+">
+|   <RESTA: "-">
+|   <MULTIPILCACION: "*">
+|   <DIVISION: "/">
+|   <INCREMENTO: "++">
+|   <DECREMENTO: "--">
+|   <WHILE: "while">
+|   <ENDWHILE: "endwhile">
+|   <IF: "if">
+|   <ENDIF: "endif">
+|   <THEN: "then">
+|   <ELSE: "else">
+|   <ELSEIF: "elseif">
+|   <PRINT: "print">
+|   <APERTURA_PAR: "(">
+|   <CIERRE_PAR: ")">
+|   <VARIABLE: "var">
+|   <COMENTARIO: "!">
+|   <NUMERO: ( ["0"-"9"] )+ >
+|   <ID: ["0"-"9""a"-"z""A"-"Z"]["0"-"9""a"-"z""A"-"Z""-""_"]*>
+}
+
+SKIP:
+{
+    <BLANCO: ["\b"]>
+|   <TABULADOR: ["\t"]>
+|   <INTRO: ["\n"]>
+}
+
+//! Gramaticas
+
+//? stmtseq = "Statement sequence" progstmt = "Program statement" 
+//    stmtseq -> progstmt
+//    |  progstmt stmtseq
+
+void smtseq(){
+    progstmt()
+    | progstmt() smtseq()
+}
+
+//? program statement
+/*
+ * programstmt -> assigconstruct
+ *               |  loopconstruct
+ *               |  ifconstruct
+ *               |  printstmt
+*/
+
+void stmtseq() {
+    assigconstruct()
+    | loopconstruct()
+    | ifconstruct()
+    | printstmt()
+}
+
+//? loop construct (WHILE)
+/*
+* loopconstruct -> WHILE '(' expr ')' stmtsequence ENDWHILE
+*/
+void loopconstruct() {
+    <WHILE> <APERTURA_PAR> expr() <CIERRE_PAR> <ENDWHILE>
+}
+
+//? ifconstruct "Sentencia IF"
+/*
+ * ifconstruct -> ifstmt stmtseq (elseifconstruct)* (elseconstruct)? ENDIF
+ */
+void ifconstruct(){
+    ifstmt() stmtseq() (elseifconstruct)* (elseconstruct)? <ENDIF>
+}
+
+//? ifthenstmt "Estructura de la condicion del if"
+/*
+ * ifthenstmt -> IF '(' expr ')' THEN
+ */
+void ifthenstmt() {
+    <IF> <APERTURA_PAR> expr() <CIERRE_PAR> <THEN>
+}
+
+//? elseifconstruct "Sentencia elseif"
+/*
+ * elseifconstruct -> 
+ *                  ELSEIF '(' expr ')' THEN stmtsequence
+ */
+
+ void elseifconstruct() {
+    <ELSEIF> <APERTURA_PAR> expr() <CIERRE_PAR> <THEN> stmtseq()
+ }
+
+//? elseconstruct "Sentencia else"
+/*
+ * elseconstruct 
+ *              -> ELSE stmtseq
+ */
+void elseconstruct() {
+    <ELSE> stmtseq()
+}
+
+//? printstmt "print"
+/*
+ * printstmt 
+ *          -> PRINT expr (',' expr)*
+ */
+void printstmt(){
+    <PRINT> expr() (',' expr())*
+}
+
+//? assigconstruct "Asignacion de valores a una variable"
+/*
+ * assigconstruct -> ID '=' expr 
+ *               |  ID '++' 
+ *               |  ID '--'
+ */
+void assigconstruct() {
+    <ID> <ASIGNACION> expr()
+    | <ID> <INCREMENTO>
+    | <ID> <DECREMENTO>
+}
+
+//? expr expresion
+/*
+ * expr -> 
+ *      expr ('+' multexp | '-' multexp) | multexp
+ */
+
+void expr() {
+    expr() (<SUMA> multexp() | <RESTA> multexp ) | multexp
+}
+
+//? multexpr "multiplicacion/division expression"
+/*
+*  multexp -> 
+*          multexp ('*' value | '/' value) | value
+*/
+
+void multexp(){
+    multexp() (<MULTIPILCACION> value() | <DIVISION> value()) | value()
+}
+
+//? value "Valor"
+/*
+ * multexp -> 
+ *          multexp ('*' value | '/' value) | value
+ */
+void value() {
+    <APERTURA_PAR> expr() <CIERRE_PAR> | <NUMERO> | <ID>
+}

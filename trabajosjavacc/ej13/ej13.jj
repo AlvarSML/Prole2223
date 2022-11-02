@@ -19,8 +19,7 @@ public class ej13 {
         };
         
         try {
-            while ( (tk = tkmngr.getNextToken()).kind != EOF ) 
-                System.out.println("<"+tokenKindString(tk.kind)+": \""+tk.image+"\">");
+            while ( (tk = tkmngr.getNextToken()).kind != EOF ) ;
         } catch (TokenMgrError x) {
             System.out.println("Exiting.");
             throw x;
@@ -44,7 +43,7 @@ TOKEN_MGR_DECLS:
 TOKEN:
 {
     <NUMERO: (["0"-"9","A"-"F","a"-"f"])+> {numero=image.toString();}
-|   <BASE: (["b","B","o","O","d","D","x","X"]|("("("2"|"8"|"16")")"))> {calcular();}
+|   <BASE: (["b","B","o","O","d","D","x","X"]|("("("2"|"8"|"16")")"))> {ej13.calcular();}
 }
 
 SKIP:
