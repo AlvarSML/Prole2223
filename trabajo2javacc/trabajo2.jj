@@ -15,34 +15,15 @@ le pase por argumento.
 
 */
 
-PARSER_BEGIN(trabajo2)
-public class trabajo2 {
+PARSER_BEGIN(Trabajo2)
+public class Trabajo2 {
     public static void main(String args[]) throws java.io.FileNotFoundException {
-        trabajo2TokenManager tkmngr;
-        Token tk;
-
-        if ( args.length < 1 ) {
-            tkmngr = new trabajo2TokenManager( new SimpleCharStream(System.in) );
-        } else {
-            tkmngr = new trabajo2TokenManager( 
-            new SimpleCharStream( new java.io.FileInputStream(args[0]),0,0 ) 
-            );
-        };        
-
-        if ( args.length < 1 ) {
-            System.out.print("Enter Expression: ");
-            System.out.flush();
-        };
-        
-        try {
-            while ( (tk = tkmngr.getNextToken()).kind != EOF ) ;
-        } catch (TokenMgrError x) {
-            System.out.println("Exiting.");
-            throw x;
-        };
+       Trabajo2 parser = new Trabajo2(System.in);
+       parser.stmtseq();
     }
 }
-PARSER_END(trabajo2)
+
+PARSER_END(Trabajo2)
 
 TOKEN_MGR_DECLS:
 {
@@ -72,7 +53,7 @@ TOKEN:
 |   <VARIABLE: "var">
 |   <COMENTARIO: "!">
 |   <NUMERO: ( ["0"-"9"] )+ >
-|   <ID: ["0"-"9""a"-"z""A"-"Z"]["0"-"9""a"-"z""A"-"Z""-""_"]*>
+|   <ID: ["0"-"9","a"-"z","A"-"Z"] (["0"-"9","a"-"z","A"-"Z","-","_"])*>
 }
 
 SKIP:
@@ -85,12 +66,21 @@ SKIP:
 //! Gramaticas
 
 //? stmtseq = "Statement sequence" progstmt = "Program statement" 
-//    stmtseq -> progstmt
-//    |  progstmt stmtseq
+/*
+ * stmtseq -> progstmt
+ *          |  progstmt stmtseq
+ */    
 
-void smtseq(){
-    progstmt()
-    | progstmt() smtseq()
+void stmtseq():
+{
+    String statement, sequence;
+}
+{
+    /*(statement = progstmt() 
+    | (statement = progstmt() sequence = smtseq()))
+    */
+
+    progstmt() (stmtseq())?
 }
 
 //? program statement
@@ -101,18 +91,22 @@ void smtseq(){
  *               |  printstmt
 */
 
-void stmtseq() {
-    assigconstruct()
+void progstmt():
+{}
+{
+    ( assigconstruct()
     | loopconstruct()
     | ifconstruct()
-    | printstmt()
+    | printstmt())
 }
 
 //? loop construct (WHILE)
 /*
 * loopconstruct -> WHILE '(' expr ')' stmtsequence ENDWHILE
 */
-void loopconstruct() {
+void loopconstruct():
+{}
+{
     <WHILE> <APERTURA_PAR> expr() <CIERRE_PAR> <ENDWHILE>
 }
 
@@ -120,15 +114,19 @@ void loopconstruct() {
 /*
  * ifconstruct -> ifstmt stmtseq (elseifconstruct)* (elseconstruct)? ENDIF
  */
-void ifconstruct(){
-    ifstmt() stmtseq() (elseifconstruct)* (elseconstruct)? <ENDIF>
+void ifconstruct():
+{}
+{
+    ifstmt() stmtseq() (elseifconstruct())* (elseconstruct())? <ENDIF>
 }
 
-//? ifthenstmt "Estructura de la condicion del if"
+//? ifstmt "Estructura de la condicion del if"
 /*
- * ifthenstmt -> IF '(' expr ')' THEN
+ * ifstmt -> IF '(' expr ')' THEN
  */
-void ifthenstmt() {
+void ifstmt():
+{}
+{
     <IF> <APERTURA_PAR> expr() <CIERRE_PAR> <THEN>
 }
 
@@ -138,7 +136,9 @@ void ifthenstmt() {
  *                  ELSEIF '(' expr ')' THEN stmtsequence
  */
 
- void elseifconstruct() {
+ void elseifconstruct():
+ {}
+ {
     <ELSEIF> <APERTURA_PAR> expr() <CIERRE_PAR> <THEN> stmtseq()
  }
 
@@ -147,7 +147,9 @@ void ifthenstmt() {
  * elseconstruct 
  *              -> ELSE stmtseq
  */
-void elseconstruct() {
+void elseconstruct():
+{}
+{
     <ELSE> stmtseq()
 }
 
@@ -156,8 +158,10 @@ void elseconstruct() {
  * printstmt 
  *          -> PRINT expr (',' expr)*
  */
-void printstmt(){
-    <PRINT> expr() (',' expr())*
+void printstmt():
+{}
+{
+    <PRINT> expr() ("," expr())*
 }
 
 //? assigconstruct "Asignacion de valores a una variable"
@@ -166,7 +170,9 @@ void printstmt(){
  *               |  ID '++' 
  *               |  ID '--'
  */
-void assigconstruct() {
+void assigconstruct():
+{}
+{
     <ID> <ASIGNACION> expr()
     | <ID> <INCREMENTO>
     | <ID> <DECREMENTO>
@@ -178,8 +184,11 @@ void assigconstruct() {
  *      expr ('+' multexp | '-' multexp) | multexp
  */
 
-void expr() {
-    expr() (<SUMA> multexp() | <RESTA> multexp ) | multexp
+void expr():
+{}
+{
+    // expr() ((<SUMA> multexp() | <RESTA> multexp() ) | multexp() )
+    ((<SUMA> multexp() | <RESTA> multexp() ) | multexp() ) expr()
 }
 
 //? multexpr "multiplicacion/division expression"
@@ -188,8 +197,11 @@ void expr() {
 *          multexp ('*' value | '/' value) | value
 */
 
-void multexp(){
-    multexp() (<MULTIPILCACION> value() | <DIVISION> value()) | value()
+void multexp():
+{}
+{
+    // multexp() (<MULTIPILCACION> value() | <DIVISION> value()) | value()
+    ((<MULTIPILCACION> value() | <DIVISION> value()) | value()) multexp()
 }
 
 //? value "Valor"
@@ -197,6 +209,8 @@ void multexp(){
  * multexp -> 
  *          multexp ('*' value | '/' value) | value
  */
-void value() {
+void value():
+{}
+{
     <APERTURA_PAR> expr() <CIERRE_PAR> | <NUMERO> | <ID>
 }
