@@ -1,0 +1,263 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<TITLE>BNF for trabajo2.jj</TITLE>
+</HEAD>
+<BODY>
+<H1 ALIGN=CENTER>BNF for trabajo2.jj</H1>
+<H2 ALIGN=CENTER>TOKENS</H2>
+<TABLE>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT&gt; TOKEN : {
+&lt;ASIGNACION: "="&gt;
+| &lt;COMPARACION: "=="&gt;
+| &lt;SUMA: "+"&gt;
+| &lt;RESTA: "-"&gt;
+| &lt;MULTIPILCACION: "*"&gt;
+| &lt;DIVISION: "/"&gt;
+| &lt;INCREMENTO: "++"&gt;
+| &lt;DECREMENTO: "--"&gt;
+| &lt;WHILE: "while"&gt;
+| &lt;ENDWHILE: "endwhile"&gt;
+| &lt;IF: "if"&gt;
+| &lt;ENDIF: "endif"&gt;
+| &lt;THEN: "then"&gt;
+| &lt;ELSE: "else"&gt;
+| &lt;ELSEIF: "elseif"&gt;
+| &lt;PRINT: "print"&gt;
+| &lt;APERTURA_PAR: "("&gt;
+| &lt;CIERRE_PAR: ")"&gt;
+| &lt;VARIABLE: "var"&gt;
+| &lt;COMENTARIO: "!"&gt;
+| &lt;NUMERO: (["0"-"9"])+&gt;
+| &lt;ID: ["0"-"9","a"-"z","A"-"Z"] (["0"-"9","a"-"z","A"-"Z","-","_"])*&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT&gt; SKIP : {
+&lt;BLANCO: ["\b"]&gt;
+| &lt;TABULADOR: ["\t"]&gt;
+| &lt;INTRO: ["\n"]&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+</TABLE>
+<H2 ALIGN=CENTER>NON-TERMINALS</H2>
+<TABLE>
+ <!-- Special token -->
+ <TR>
+  <TD>
+<PRE>
+//! Gramaticas
+
+//? stmtseq = "Statement sequence" progstmt = "Program statement" 
+/*
+* stmtseq -> progstmt stmtseq?      
+*/</PRE>
+  </TD>
+ </TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod1">stmtseq</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod2">progstmt</A> ( <A HREF="#prod1">stmtseq</A> )?</TD>
+</TR>
+ <!-- Special token -->
+ <TR>
+  <TD>
+<PRE>
+//? program statement "Todas las opciones que puede tener el programa"
+/*
+ * programstmt -> assigconstruct
+ *               |  loopconstruct
+ *               |  ifconstruct
+ *               |  printstmt
+*/</PRE>
+  </TD>
+ </TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod2">progstmt</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod3">assigconstruct</A> | <A HREF="#prod4">loopconstruct</A> | <A HREF="#prod5">ifconstruct</A> | <A HREF="#prod6">printstmt</A> )</TD>
+</TR>
+ <!-- Special token -->
+ <TR>
+  <TD>
+<PRE>
+//? loop construct (WHILE)
+/*
+* loopconstruct -> WHILE '(' expr ')' stmtsequence ENDWHILE
+*/</PRE>
+  </TD>
+ </TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod4">loopconstruct</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;WHILE&gt; &lt;APERTURA_PAR&gt; <A HREF="#prod7">expr</A> &lt;CIERRE_PAR&gt; &lt;ENDWHILE&gt;</TD>
+</TR>
+ <!-- Special token -->
+ <TR>
+  <TD>
+<PRE>
+//? ifconstruct "Sentencia IF"
+/*
+ * ifconstruct -> ifstmt stmtseq (elseifconstruct)* (elseconstruct)? ENDIF
+ */</PRE>
+  </TD>
+ </TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod5">ifconstruct</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod8">ifstmt</A> <A HREF="#prod1">stmtseq</A> ( <A HREF="#prod9">elseifconstruct</A> )* ( <A HREF="#prod10">elseconstruct</A> )? &lt;ENDIF&gt;</TD>
+</TR>
+ <!-- Special token -->
+ <TR>
+  <TD>
+<PRE>
+//? ifstmt "Estructura de la condicion del if"
+/*
+ * ifstmt -> IF '(' expr ')' THEN
+ */</PRE>
+  </TD>
+ </TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod8">ifstmt</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;IF&gt; &lt;APERTURA_PAR&gt; <A HREF="#prod7">expr</A> &lt;CIERRE_PAR&gt; &lt;THEN&gt;</TD>
+</TR>
+ <!-- Special token -->
+ <TR>
+  <TD>
+<PRE>
+//? elseifconstruct "Sentencia elseif"
+/*
+ * elseifconstruct -> 
+ *                  ELSEIF '(' expr ')' THEN stmtsequence
+ */</PRE>
+  </TD>
+ </TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod9">elseifconstruct</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;ELSEIF&gt; &lt;APERTURA_PAR&gt; <A HREF="#prod7">expr</A> &lt;CIERRE_PAR&gt; &lt;THEN&gt; <A HREF="#prod1">stmtseq</A></TD>
+</TR>
+ <!-- Special token -->
+ <TR>
+  <TD>
+<PRE>
+//? elseconstruct "Sentencia else"
+/*
+ * elseconstruct 
+ *              -> ELSE stmtseq
+ */</PRE>
+  </TD>
+ </TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod10">elseconstruct</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;ELSE&gt; <A HREF="#prod1">stmtseq</A></TD>
+</TR>
+ <!-- Special token -->
+ <TR>
+  <TD>
+<PRE>
+//? printstmt "print"
+/*
+ * printstmt 
+ *          -> PRINT expr (',' expr)*
+ */</PRE>
+  </TD>
+ </TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod6">printstmt</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;PRINT&gt; <A HREF="#prod7">expr</A> ( "," <A HREF="#prod7">expr</A> )*</TD>
+</TR>
+ <!-- Special token -->
+ <TR>
+  <TD>
+<PRE>
+//? assigconstruct "Asignacion de valores a una variable"
+/*
+ * assigconstruct -> ID '=' expr 
+ *               |  ID '++' 
+ *               |  ID '--'
+ */</PRE>
+  </TD>
+ </TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod3">assigconstruct</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;ID&gt; ( ( &lt;ASIGNACION&gt; <A HREF="#prod7">expr</A> ) | &lt;INCREMENTO&gt; | &lt;DECREMENTO&gt; )</TD>
+</TR>
+ <!-- Special token -->
+ <TR>
+  <TD>
+<PRE>
+//? expr expresion
+/*
+ * expr -> 
+ *      expr ('+' multexp | '-' multexp) | multexp
+ */</PRE>
+  </TD>
+ </TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod7">expr</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;SUMA&gt; | &lt;RESTA&gt; )? <A HREF="#prod11">multexp</A> <A HREF="#prod7">expr</A></TD>
+</TR>
+ <!-- Special token -->
+ <TR>
+  <TD>
+<PRE>
+//? multexpr "multiplicacion/division expression"
+/*
+*  multexp -> 
+*          multexp ('*' value | '/' value) | value
+*/</PRE>
+  </TD>
+ </TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod11">multexp</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( ( &lt;MULTIPILCACION&gt; <A HREF="#prod12">value</A> | &lt;DIVISION&gt; <A HREF="#prod12">value</A> ) | <A HREF="#prod12">value</A> ) <A HREF="#prod11">multexp</A></TD>
+</TR>
+ <!-- Special token -->
+ <TR>
+  <TD>
+<PRE>
+//? value "Valor"
+/*
+ * multexp -> 
+ *          multexp ('*' value | '/' value) | value
+ */</PRE>
+  </TD>
+ </TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod12">value</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;APERTURA_PAR&gt; <A HREF="#prod7">expr</A> &lt;CIERRE_PAR&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>|</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;NUMERO&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>|</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;ID&gt;</TD>
+</TR>
+</TABLE>
+</BODY>
+</HTML>

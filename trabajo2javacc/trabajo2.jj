@@ -1,7 +1,7 @@
 /*
 - El lenguaje de alto nivel es muy sencillo. 
-[] No tiene declaración de tipos.
-[] El único tipo que permite es el tipo entero.
+[x] No tiene declaración de tipos.
+[x] El único tipo que permite es el tipo entero.
 [] En las condiciones de las instrucciones if y while el valor 0 se interpreta como falso y cualquier 
 otro valor como cierto.
 [] Los operadores de incremento/decremento '++' y '--' hacen que la variable 
@@ -11,13 +11,19 @@ aumente/decremente su valor en un entero.
 
 [] Debe ser capaz de leer por entrada estándar (teclado) y por un fichero que se 
 le pase por argumento.
-
+[x] Eliminacion de recursividad de izquierda
+[x] Factorizacion
 
 */
 
 PARSER_BEGIN(Trabajo2)
 public class Trabajo2 {
-    public static void main(String args[]) throws java.io.FileNotFoundException {
+    public static void main(String args[]) throws java.io.FileNotFoundException, ParseException{
+        
+        if (args.length() > 0) {
+            System.out.println("Archivo");
+        }
+
        Trabajo2 parser = new Trabajo2(System.in);
        parser.stmtseq();
     }
@@ -51,7 +57,6 @@ TOKEN:
 |   <APERTURA_PAR: "(">
 |   <CIERRE_PAR: ")">
 |   <VARIABLE: "var">
-|   <COMENTARIO: "!">
 |   <NUMERO: ( ["0"-"9"] )+ >
 |   <ID: ["0"-"9","a"-"z","A"-"Z"] (["0"-"9","a"-"z","A"-"Z","-","_"])*>
 }
@@ -61,29 +66,25 @@ SKIP:
     <BLANCO: ["\b"]>
 |   <TABULADOR: ["\t"]>
 |   <INTRO: ["\n"]>
+|   <COMMENTARIO : "!" (~["\n"])* ("\n") >
 }
 
 //! Gramaticas
 
 //? stmtseq = "Statement sequence" progstmt = "Program statement" 
 /*
- * stmtseq -> progstmt
- *          |  progstmt stmtseq
- */    
+* stmtseq -> progstmt stmtseq?      
+*/    
 
 void stmtseq():
 {
     String statement, sequence;
 }
 {
-    /*(statement = progstmt() 
-    | (statement = progstmt() sequence = smtseq()))
-    */
-
     progstmt() (stmtseq())?
 }
 
-//? program statement
+//? program statement "Todas las opciones que puede tener el programa"
 /*
  * programstmt -> assigconstruct
  *               |  loopconstruct
@@ -173,23 +174,36 @@ void printstmt():
 void assigconstruct():
 {}
 {
+    /*
     <ID> <ASIGNACION> expr()
     | <ID> <INCREMENTO>
     | <ID> <DECREMENTO>
+    */
+    <ID>
+    ((<ASIGNACION> expr())
+    | <INCREMENTO>
+    | <DECREMENTO>
+    )
 }
 
 //? expr expresion
 /*
  * expr -> 
- *      expr ('+' multexp | '-' multexp) | multexp
+ *      multexp expr'
  */
 
 void expr():
 {}
 {
-    // expr() ((<SUMA> multexp() | <RESTA> multexp() ) | multexp() )
-    ((<SUMA> multexp() | <RESTA> multexp() ) | multexp() ) expr()
+    multexpr() (expr_())?
 }
+
+void expr_():
+{}
+{
+    ("+" | "-") multexpr()
+}
+
 
 //? multexpr "multiplicacion/division expression"
 /*
@@ -197,11 +211,22 @@ void expr():
 *          multexp ('*' value | '/' value) | value
 */
 
-void multexp():
+void multexpr():
 {}
 {
-    // multexp() (<MULTIPILCACION> value() | <DIVISION> value()) | value()
-    ((<MULTIPILCACION> value() | <DIVISION> value()) | value()) multexp()
+    // multexpr() (<MULTIPILCACION> value() | <DIVISION> value()) | value()
+    //((<MULTIPILCACION> value() | <DIVISION> value()) | value()) multexp()
+    value() (multexpr_())?
+}
+
+void multexpr_():
+{
+    Token tk;
+    String op,val;
+}
+{
+    //["*""/"] value() 
+    ("*" { op="Multi"; } | "/" {op="Div";} ) val=value() { System.out.println(op);}
 }
 
 //? value "Valor"
@@ -210,7 +235,13 @@ void multexp():
  *          multexp ('*' value | '/' value) | value
  */
 void value():
-{}
 {
-    <APERTURA_PAR> expr() <CIERRE_PAR> | <NUMERO> | <ID>
+    Token tk;
+    String id;
+}
+// Siempre el ID de aqui es un valord 
+{
+    <APERTURA_PAR> expr() <CIERRE_PAR> 
+    | <NUMERO> {System.out.println("mete "+tk.image);}
+    | <ID>  {System.out.println("valord "+tk.image)}
 }
