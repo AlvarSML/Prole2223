@@ -15,17 +15,33 @@ le pase por argumento.
 [x] Factorizacion
 
 */
-
 PARSER_BEGIN(Trabajo2)
+
+import java.io.File;  // Import the File class
+import java.io.FileNotFoundException;  // Import this class to handle errors
+import java.util.Scanner; // Import the Scanner class to read text files
+import java.io.FileReader;
+import java.io.BufferedReader;
+
 public class Trabajo2 {
+
     public static void main(String args[]) throws java.io.FileNotFoundException, ParseException{
-        
-        if (args.length() > 0) {
-            System.out.println("Archivo");
+        Trabajo2 parser; 
+        System.out.println(args);
+        if (args.length == 0) {
+            parser = new Trabajo2(System.in);
+            parser.stmtseq();
+        } else {
+            for (String arg: args){
+                File archivoPrograma = new File(arg);
+                BufferedReader br = new BufferedReader(new FileReader(archivoPrograma));
+                parser = new Trabajo2(br);
+                parser.stmtseq();
+            }
         }
 
-       Trabajo2 parser = new Trabajo2(System.in);
-       parser.stmtseq();
+       
+       
     }
 }
 
@@ -63,7 +79,7 @@ TOKEN:
 
 SKIP:
 {
-    <BLANCO: ["\b"]>
+    <BLANCO: ["\b"," "]>
 |   <TABULADOR: ["\t"]>
 |   <INTRO: ["\n"]>
 |   <COMMENTARIO : "!" (~["\n"])* ("\n") >
@@ -172,17 +188,19 @@ void printstmt():
  *               |  ID '--'
  */
 void assigconstruct():
-{}
+{
+    Token tk;
+}
 {
     /*
     <ID> <ASIGNACION> expr()
     | <ID> <INCREMENTO>
     | <ID> <DECREMENTO>
     */
-    <ID>
-    ((<ASIGNACION> expr())
-    | <INCREMENTO>
-    | <DECREMENTO>
+    tk=<ID>                 {System.out.print("valori "+tk.image+" \n");}
+    ((<ASIGNACION> expr())  {System.out.print("asigna\n");}
+    | <INCREMENTO>          {System.out.print("incr\n");}
+    | <DECREMENTO>          {System.out.print("decr\n");}
     )
 }
 
@@ -195,13 +213,21 @@ void assigconstruct():
 void expr():
 {}
 {
-    multexpr() (expr_())?
+    multexpr() (expr_())*
 }
 
+//? expr_ suma resta seguido de mulexpr
+/*
+ * expr' ->
+ *      (+|-) mulexpr
+ */
 void expr_():
-{}
 {
-    ("+" | "-") multexpr()
+    Token tk;
+    String op;
+}
+{
+    ("+" {op="suma";} | "-" {op="resta";} ) multexpr() {System.out.println(op);}
 }
 
 
@@ -216,7 +242,7 @@ void multexpr():
 {
     // multexpr() (<MULTIPILCACION> value() | <DIVISION> value()) | value()
     //((<MULTIPILCACION> value() | <DIVISION> value()) | value()) multexp()
-    value() (multexpr_())?
+    value() (multexpr_())*
 }
 
 void multexpr_():
@@ -226,7 +252,7 @@ void multexpr_():
 }
 {
     //["*""/"] value() 
-    ("*" { op="Multi"; } | "/" {op="Div";} ) val=value() { System.out.println(op);}
+    ("*" { op="Multi"; } | "/" {op="Div";} ) value() { System.out.println(op);}
 }
 
 //? value "Valor"
@@ -242,6 +268,6 @@ void value():
 // Siempre el ID de aqui es un valord 
 {
     <APERTURA_PAR> expr() <CIERRE_PAR> 
-    | <NUMERO> {System.out.println("mete "+tk.image);}
-    | <ID>  {System.out.println("valord "+tk.image)}
+    | tk=<NUMERO> {System.out.println("mete "+tk.image);}
+    | tk=<ID>  {System.out.println("valord "+tk.image);}
 }
