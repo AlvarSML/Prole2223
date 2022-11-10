@@ -1,19 +1,80 @@
 /*
-- El lenguaje de alto nivel es muy sencillo. 
-[x] No tiene declaración de tipos.
-[x] El único tipo que permite es el tipo entero.
-[] En las condiciones de las instrucciones if y while el valor 0 se interpreta como falso y cualquier 
-otro valor como cierto.
-[] Los operadores de incremento/decremento '++' y '--' hacen que la variable 
-aumente/decremente su valor en un entero.
+8888888                                         888                      888             
+  888                                           888                      888             
+  888                                           888                      888             
+  888   88888b.d88b.  88888b.   .d88b.  888d888 888888  8888b.  88888b.  888888  .d88b.  
+  888   888 "888 "88b 888 "88b d88""88b 888P"   888        "88b 888 "88b 888    d8P  Y8b 
+  888   888  888  888 888  888 888  888 888     888    .d888888 888  888 888    88888888 
+  888   888  888  888 888 d88P Y88..88P 888     Y88b.  888  888 888  888 Y88b.  Y8b.     
+8888888 888  888  888 88888P"   "Y88P"  888      "Y888 "Y888888 888  888  "Y888  "Y8888  
+                      888                                                                
+                      888                                                                
+                      888                                  
 
-[x] Los comentarios en el lenguaje serán en línea comenzando con "!".
+- Se han añadido comentarions a la pila que comienzan por "#" 
+    para indicar cuando empiexan los if y los while, asi se
+    pueden identificar aunque esten anidados
+- Han sido añadidads tabulaciones para identificar mejor los
+    bucles anidados, las etiquetas marcan el comienzo y el fin,
+    por ejemplo el contenido de un elseif va a estar una posicion
+    mas a la derechas que la etiqueta que indica su inicio.
+- He modificado la generacion de las etiquetas para que cada 
+    una tenga un significado que permita identificar su
+    funcion en cada bloque:
 
-[x] Debe ser capaz de leer por entrada estándar (teclado) y por un fichero que se 
-le pase por argumento.
-[x] Eliminacion de recursividad de izquierda
-[x] Factorizacion
+    WHILE:
+    - INIWHILE[n]: Indica el comienzo de un bucle, n indica
+        en que bucle nos encontramos, de esta forma no se
+        repiten las etiquetas.
+    - FINWHILE[n]: Indica el fin de un bloque WHILE con 
+        numero n que se corresponde con un INIWHILE con
+        el mismo n
+    
+    IF ELSIF ELSE:
+    En este coso no tenemos etiqueta de entrada asi que se
+    incluye un comentario con el numero n de condicional
+    - ELSEIF[n]|[m]: En este caso n sirve para indetificar
+        el numero de condicional IF en el que nos encontramos
+        (ifstmt) que sera el mismo en todo el bloque y m 
+        identifica el siguiente else/elseif de tal forma que
+        el primer elseif del condicional 1 va a ser identificado
+        como ELSEIF1|0, el siguiente ELSEIF1|1 etc. Si
+        tuviesemos un if anidado dentro del 1 su primer elseif
+        se identificaria como ELSEIF2|0, asi se garantiza que
+        a pesar de comaprtir nombre, todos los else/elseif del
+        programa pila se pueden identificar de forma
+        inequivoca.
+    - FINIF[n]: Se genera para indicar el final de un IF,
+        en caso de no tener un else, se garantiza que exite
+        una etiqueta a la que saltar si la condicion es falsa.
+    
+    Un if con elseif sin else tendra redundancia con esta forma:
+    # Inicio de IF [(n)]
+        [Condicion del IF(n)]
+        sifalso ve a ELSEIF(n)|0
+        [Operaciones si cierto]
+        vea FIN(n)
+    ELSEIF(n)|0
+        [condicion del ELSEIF]
+        sifalso ve a ELSEIF(n)|1
+        [Operaciones si cierto]
+        vea FIN(n)
+    ELSEIF(n)|1
+        vea FIN(n)
+    FIN(n)
 
+      (()__(()
+     /       \ 
+    ( /    \  \
+     \ o o    /
+     (_()_)__/ \             
+    / _,==.____ \
+   (   |--|      )  Perdon por la chapa
+   /\_.|__|'-.__/\_
+  / (        /     \ 
+  \  \      (      /
+   )  '._____)    /    
+(((____.--(((____/mrf
 */
 PARSER_BEGIN(Trabajo2)
 
@@ -27,6 +88,11 @@ public class Trabajo2 {
 
     public static int nWhile = 0, nCondicional = 0, profundidad = 0 ;
 
+    /**
+     * Esta fucion encapsula el println para poder incluir tabulaciones de forma automatizada
+     * @param msg La cadena a imprimit
+     * @param profundidad El numeo de tabulaciones que se insertan antes del mensaje
+     */
     public static void print(String msg, int depth){
         String iden = "";
         for (int i=0;i<depth;i++){
@@ -118,9 +184,9 @@ void stmtseq():
 void progstmt():
 {}
 {
-    ( assigconstruct()  {}
-    | loopconstruct()   {System.out.println("# Fin de bucle");}
-    | ifconstruct()     {System.out.println("# Fin de condicional");}
+    ( assigconstruct()              {}
+    | loopconstruct()               {print("# Fin de bucle\n",profundidad);}
+    | ifconstruct(nCondicional)     {print("# Fin de condicional\n",profundidad);}
     | printstmt()       
     )      
 }
@@ -158,32 +224,35 @@ void loopconstruct():
 /*
  * ifconstruct -> ifstmt stmtseq (elseifconstruct)* (elseconstruct)? ENDIF
  */
-void ifconstruct():
+void ifconstruct(int nIf):
 {
     int n_elif = 0;
     String sigelse;
 }
 {
-    ifstmt(n_elif) // if (expr) then:  
+    {
+        nCondicional++;
+    }
+    ifstmt(nIf,n_elif) // if (expr) then:  
     stmtseq()      //   [expr is true] {}
         {
             profundidad--;
-            print("vea FINIF"+(nCondicional)+"\n",profundidad);
-            sigelse = "ELSEIF"+(nCondicional)+"|"+(n_elif)+"\n";
+            print("vea FINIF"+(nIf)+"\n",profundidad);
+            sigelse = "ELSEIF"+(nIf)+"|"+(n_elif)+"\n";
             print(sigelse,profundidad);
         }
-    (elseifconstruct((++n_elif)) 
+    (elseifconstruct(nIf,(++n_elif)) 
         {
             profundidad--;
-            sigelse = "ELSEIF"+(nCondicional)+"|"+(n_elif)+"\n";
+            sigelse = "ELSEIF"+(nIf)+"|"+(n_elif)+"\n";
             print(sigelse,profundidad);
-            print("vea FINIF"+(nCondicional)+"\n",profundidad);
+            print("vea FINIF"+(nIf)+"\n",profundidad);
         } 
     )* 
     (elseconstruct(++n_elif))? 
     <ENDIF>
         {
-            print("FINIF"+(nCondicional)+"\n",profundidad);
+            print("FINIF"+(nIf)+"\n",profundidad);
         }
 }
 
@@ -191,15 +260,15 @@ void ifconstruct():
 /*
  * ifstmt -> IF '(' expr ')' THEN
  */
-void ifstmt(int n_elif):
+void ifstmt(int nIf, int n_elif):
 {
     String sigelse;
     
 }
 {
     {
-        sigelse = "ELSEIF"+(nCondicional)+"|"+(n_elif)+"\n";
-        print("# Inicio de IF\n",profundidad);
+        sigelse = "ELSEIF"+(nIf)+"|"+(n_elif)+"\n";
+        print("# Inicio de IF ["+nIf+"]\n",profundidad);
         profundidad++;
     }
     <IF> <APERTURA_PAR> expr() <CIERRE_PAR> {print("sifalsovea "+sigelse,profundidad);}
@@ -213,13 +282,13 @@ void ifstmt(int n_elif):
  *                  ELSEIF '(' expr ')' THEN stmtsequence
  */
 
- void elseifconstruct(int num):
+ void elseifconstruct(int nIf,int num):
  {
     String sigelse;
  }
  {
     {
-        sigelse = "ELSEIF"+(nCondicional)+"|";
+        sigelse = "ELSEIF"+(nIf)+"|";
         //print(sigelse+(num-1)+"\n",profundidad);
         profundidad++;        
     }
@@ -283,15 +352,18 @@ void assigconstruct():
     */
     tk=<ID>                 {
                                 print("valori "+tk.image+" \n",profundidad);
+                                print("valord "+tk.image+" \n",profundidad);
                             }
     ((<ASIGNACION> expr())  {print("asigna\n",profundidad);}
     | <INCREMENTO>          {
                                 print("mete 1\n",profundidad);
                                 print("suma\n",profundidad);
+                                print("asigna\n",profundidad);
                             }
     | <DECREMENTO>          {
                                 print("mete 1\n",profundidad);
                                 print("resta\n",profundidad);
+                                print("asigna\n",profundidad);
                             }
     )
 }

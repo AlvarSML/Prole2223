@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# Ejecucion de lo que haya en ./compiled
+# $1 clase a ejecutar
+# $2 archivo de entrada
+ejecucion() {
+    res=$(java -cp ./compiled $1 $2)
+}
+
 # Compila todos los .java
 compilar_java() {
     res=$(javac -d ./compiled *.java )
