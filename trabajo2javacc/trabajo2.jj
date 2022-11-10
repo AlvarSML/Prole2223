@@ -344,7 +344,7 @@ void multexpr_():
 }
 {
     //["*""/"] value() 
-    ("*" { op="Multi"; } | "/" {op="Div";} ) value() {print(op,profundidad);}
+    ("*" { op="mul"; } | "/" {op="div";} ) value() {print(op,profundidad);}
 }
 
 //? value "Valor"
