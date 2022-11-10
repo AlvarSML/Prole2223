@@ -7,9 +7,9 @@ otro valor como cierto.
 [] Los operadores de incremento/decremento '++' y '--' hacen que la variable 
 aumente/decremente su valor en un entero.
 
-[] Los comentarios en el lenguaje serán en línea comenzando con "!".
+[x] Los comentarios en el lenguaje serán en línea comenzando con "!".
 
-[] Debe ser capaz de leer por entrada estándar (teclado) y por un fichero que se 
+[x] Debe ser capaz de leer por entrada estándar (teclado) y por un fichero que se 
 le pase por argumento.
 [x] Eliminacion de recursividad de izquierda
 [x] Factorizacion
@@ -25,6 +25,16 @@ import java.io.BufferedReader;
 
 public class Trabajo2 {
 
+    public static int nWhile = 0, nCondicional = 0, profundidad = 0 ;
+
+    public static void print(String msg, int depth){
+        String iden = "";
+        for (int i=0;i<depth;i++){
+            iden = iden+"\t";
+        }
+        System.out.print(iden+msg);
+    }
+
     public static void main(String args[]) throws java.io.FileNotFoundException, ParseException{
         Trabajo2 parser; 
         System.out.println(args);
@@ -38,10 +48,7 @@ public class Trabajo2 {
                 parser = new Trabajo2(br);
                 parser.stmtseq();
             }
-        }
-
-       
-       
+        }      
     }
 }
 
@@ -72,9 +79,8 @@ TOKEN:
 |   <PRINT: "print">
 |   <APERTURA_PAR: "(">
 |   <CIERRE_PAR: ")">
-|   <VARIABLE: "var">
 |   <NUMERO: ( ["0"-"9"] )+ >
-|   <ID: ["0"-"9","a"-"z","A"-"Z"] (["0"-"9","a"-"z","A"-"Z","-","_"])*>
+|   <ID: ["$","A"-"Z","_","a"-"z"] (["$","A"-"Z","_","a"-"z","0"-"9"])* >
 }
 
 SKIP:
@@ -98,6 +104,7 @@ void stmtseq():
 }
 {
     progstmt() (stmtseq())?
+    | <EOF>
 }
 
 //? program statement "Todas las opciones que puede tener el programa"
@@ -111,20 +118,40 @@ void stmtseq():
 void progstmt():
 {}
 {
-    ( assigconstruct()
-    | loopconstruct()
-    | ifconstruct()
-    | printstmt())
+    ( assigconstruct()  {}
+    | loopconstruct()   {System.out.println("# Fin de bucle");}
+    | ifconstruct()     {System.out.println("# Fin de condicional");}
+    | printstmt()       
+    )      
 }
 
 //? loop construct (WHILE)
 /*
-* loopconstruct -> WHILE '(' expr ')' stmtsequence ENDWHILE
+* loopconstruct -> 
+*           WHILE '(' expr ')' stmtseq ENDWHILE
 */
 void loopconstruct():
-{}
 {
-    <WHILE> <APERTURA_PAR> expr() <CIERRE_PAR> <ENDWHILE>
+    String inicio, fin;
+}
+{   
+    {        
+        inicio = "INIWHILE"+(++nWhile)+"\n";
+        fin = "FINWHILE"+(nWhile)+"\n";
+        print(inicio,profundidad);
+        profundidad++;
+    }
+    <WHILE> 
+    <APERTURA_PAR> expr() <CIERRE_PAR> {print("sifalsovea "+fin,profundidad);}
+    stmtseq()
+    {
+        print("vea "+inicio,profundidad);
+    }
+    <ENDWHILE>
+    {
+        profundidad--;
+        print(fin,profundidad);
+    }
 }
 
 //? ifconstruct "Sentencia IF"
@@ -132,19 +159,52 @@ void loopconstruct():
  * ifconstruct -> ifstmt stmtseq (elseifconstruct)* (elseconstruct)? ENDIF
  */
 void ifconstruct():
-{}
 {
-    ifstmt() stmtseq() (elseifconstruct())* (elseconstruct())? <ENDIF>
+    int n_elif = 0;
+    String sigelse;
+}
+{
+    ifstmt(n_elif) // if (expr) then:  
+    stmtseq()      //   [expr is true] {}
+        {
+            profundidad--;
+            print("vea FINIF"+(nCondicional)+"\n",profundidad);
+            sigelse = "ELSEIF"+(nCondicional)+"|"+(n_elif)+"\n";
+            print(sigelse,profundidad);
+        }
+    (elseifconstruct((++n_elif)) 
+        {
+            profundidad--;
+            sigelse = "ELSEIF"+(nCondicional)+"|"+(n_elif)+"\n";
+            print(sigelse,profundidad);
+            print("vea FINIF"+(nCondicional)+"\n",profundidad);
+        } 
+    )* 
+    (elseconstruct(++n_elif))? 
+    <ENDIF>
+        {
+            print("FINIF"+(nCondicional)+"\n",profundidad);
+        }
 }
 
 //? ifstmt "Estructura de la condicion del if"
 /*
  * ifstmt -> IF '(' expr ')' THEN
  */
-void ifstmt():
-{}
+void ifstmt(int n_elif):
 {
-    <IF> <APERTURA_PAR> expr() <CIERRE_PAR> <THEN>
+    String sigelse;
+    
+}
+{
+    {
+        sigelse = "ELSEIF"+(nCondicional)+"|"+(n_elif)+"\n";
+        print("# Inicio de IF\n",profundidad);
+        profundidad++;
+    }
+    <IF> <APERTURA_PAR> expr() <CIERRE_PAR> {print("sifalsovea "+sigelse,profundidad);}
+    <THEN>
+
 }
 
 //? elseifconstruct "Sentencia elseif"
@@ -153,10 +213,18 @@ void ifstmt():
  *                  ELSEIF '(' expr ')' THEN stmtsequence
  */
 
- void elseifconstruct():
- {}
+ void elseifconstruct(int num):
  {
-    <ELSEIF> <APERTURA_PAR> expr() <CIERRE_PAR> <THEN> stmtseq()
+    String sigelse;
+ }
+ {
+    {
+        sigelse = "ELSEIF"+(nCondicional)+"|";
+        //print(sigelse+(num-1)+"\n",profundidad);
+        profundidad++;        
+    }
+    <ELSEIF> <APERTURA_PAR> expr() <CIERRE_PAR> {print("sifalsovea "+sigelse+(num)+"\n",profundidad);}
+    <THEN> stmtseq()
  }
 
 //? elseconstruct "Sentencia else"
@@ -164,10 +232,24 @@ void ifstmt():
  * elseconstruct 
  *              -> ELSE stmtseq
  */
-void elseconstruct():
-{}
+void elseconstruct(int num):
 {
-    <ELSE> stmtseq()
+    String sigelse;
+}
+{
+    {
+        sigelse = "ELSEIF"+(nCondicional)+"|";
+        //print(sigelse+(num-1)+"\n",profundidad);
+        //print("ELSE"+nCondicional+"\n",profundidad);
+    }
+    <ELSE>
+    {
+        profundidad++;
+    }
+    stmtseq()
+    {
+        profundidad--;
+    }
 }
 
 //? printstmt "print"
@@ -178,8 +260,10 @@ void elseconstruct():
 void printstmt():
 {}
 {
-    <PRINT> expr() ("," expr())*
+    <PRINT> expr() {print("print\n",profundidad);}
+    ("," expr() {print("print\n",profundidad);} )*
 }
+    
 
 //? assigconstruct "Asignacion de valores a una variable"
 /*
@@ -197,10 +281,18 @@ void assigconstruct():
     | <ID> <INCREMENTO>
     | <ID> <DECREMENTO>
     */
-    tk=<ID>                 {System.out.print("valori "+tk.image+" \n");}
-    ((<ASIGNACION> expr())  {System.out.print("asigna\n");}
-    | <INCREMENTO>          {System.out.print("incr\n");}
-    | <DECREMENTO>          {System.out.print("decr\n");}
+    tk=<ID>                 {
+                                print("valori "+tk.image+" \n",profundidad);
+                            }
+    ((<ASIGNACION> expr())  {print("asigna\n",profundidad);}
+    | <INCREMENTO>          {
+                                print("mete 1\n",profundidad);
+                                print("suma\n",profundidad);
+                            }
+    | <DECREMENTO>          {
+                                print("mete 1\n",profundidad);
+                                print("resta\n",profundidad);
+                            }
     )
 }
 
@@ -227,7 +319,7 @@ void expr_():
     String op;
 }
 {
-    ("+" {op="suma";} | "-" {op="resta";} ) multexpr() {System.out.println(op);}
+    ("+" {op="suma";} | "-" {op="resta";} ) multexpr() {print(op+"\n",profundidad);}
 }
 
 
@@ -252,7 +344,7 @@ void multexpr_():
 }
 {
     //["*""/"] value() 
-    ("*" { op="Multi"; } | "/" {op="Div";} ) value() { System.out.println(op);}
+    ("*" { op="Multi"; } | "/" {op="Div";} ) value() {print(op,profundidad);}
 }
 
 //? value "Valor"
@@ -268,6 +360,6 @@ void value():
 // Siempre el ID de aqui es un valord 
 {
     <APERTURA_PAR> expr() <CIERRE_PAR> 
-    | tk=<NUMERO> {System.out.println("mete "+tk.image);}
-    | tk=<ID>  {System.out.println("valord "+tk.image);}
+    | tk=<NUMERO> {print("mete "+tk.image+"\n",profundidad);}
+    | tk=<ID>  {print("valord "+tk.image+"\n",profundidad);}
 }

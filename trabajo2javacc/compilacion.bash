@@ -12,8 +12,12 @@ compilar_java() {
 }
 
 compilar_archivo() {
-    echo "- [Javacc] Compilando  $1 -"
-    resultado=$(javacc $1)
+    echo "- [Javacc] Compilando  $1 con debug $2 -"
+    if [[ $2 -eq 1 ]]; then
+        resultado=$(javacc -DEBUG_PARSER:true $1)
+    else
+        resultado=$(javacc -DEBUG_PARSER:false $1)
+    fi
     if [ $? -eq 1 ]; then
         echo "- [Error] El javacc tiene errores"
         echo $resultado
@@ -26,8 +30,16 @@ compilar_archivo() {
 
 if [ $# -ge 1 ]; then
     echo "- Leyendo argumentos de entrada -"
+    declare -i debug
+    debug=0
+    
     for archivo in $@; do
-        compilar_archivo $archivo
+        if [[ $archivo = -d ]];
+        then
+            debug=1
+        else
+            compilar_archivo $archivo $debug
+        fi
     done
 else
     for archivo in `*.jj`; do

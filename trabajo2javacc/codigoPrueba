@@ -1,9 +1,18 @@
-var = 5 + 5                 ! la variable var toma el valor de 5 + 5
-while (var) var-- endwhile  ! bucle para decrementar var
-if (5 - var)                ! Condicional
-then
-  print 3 * 3
-else
-  print var - 0
+if (c - d) then
+  print c
+elseif (a + b) then
+  print a
+else print d
 endif
-print 1, 2, 3, var          ! Imprimir varios valores
+
+if (a) then
+  print a
+elseif (b) then
+  print b
+endif
+
+if (c - d) then 
+  print c
+else 
+  print d
+endif
