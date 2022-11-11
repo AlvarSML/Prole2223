@@ -352,7 +352,6 @@ void assigconstruct():
     */
     tk=<ID>                 {
                                 print("valori "+tk.image+" \n",profundidad);
-                                print("valord "+tk.image+" \n",profundidad);
                             }
     ((<ASIGNACION> expr())  {print("asigna\n",profundidad);}
     | <INCREMENTO>          {
@@ -416,7 +415,7 @@ void multexpr_():
 }
 {
     //["*""/"] value() 
-    ("*" { op="mul"; } | "/" {op="div";} ) value() {print(op,profundidad);}
+    ("*" { op="mul\n"; } | "/" {op="div\n";} ) value() {print(op,profundidad);}
 }
 
 //? value "Valor"
