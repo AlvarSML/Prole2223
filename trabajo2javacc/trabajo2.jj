@@ -353,13 +353,15 @@ void assigconstruct():
     tk=<ID>                 {
                                 print("valori "+tk.image+" \n",profundidad);
                             }
-    ((<ASIGNACION> expr())  {print("asigna\n",profundidad);}
+    ((<ASIGNACION> expr())  {   print("asigna\n",profundidad);}
     | <INCREMENTO>          {
+                                print("valord "+tk.image+"\n",profundidad);
                                 print("mete 1\n",profundidad);
                                 print("suma\n",profundidad);
                                 print("asigna\n",profundidad);
                             }
     | <DECREMENTO>          {
+                                print("valord "+tk.image+"\n",profundidad);
                                 print("mete 1\n",profundidad);
                                 print("resta\n",profundidad);
                                 print("asigna\n",profundidad);

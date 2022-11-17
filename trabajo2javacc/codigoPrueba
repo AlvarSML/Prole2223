@@ -1,3 +1,11 @@
-while (3+3+1)
-print (3+2*(9+2))
+while (c)
+    if (5) then print 7
+    elseif (8) then 
+        while(67) 
+            if (8) then print 8
+            else print 6
+            endif
+        endwhile
+        print 99999
+    endif
 endwhile
