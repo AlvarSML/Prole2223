@@ -1,9 +1,10 @@
 %{
 #include <stdio.h>
+#include <stdlib.h>
 int yyerror(char *);
 %}
 
-%token IF THEN ELSEIF ELSE WHILE DO ENDIF
+%token ID NUM IF THEN ELSEIF ELSE WHILE ENDWHILE ENDIF INCREMENTO DECREMENTO PRINT
 %%
 
 stmtsequence:
@@ -49,14 +50,14 @@ elseifconstruct:
     expr
     ')'
     THEN
-    stmtsequence {}
+    stmtsequence 
     elseiffinal
     ;
 
 elseiffinal:
     elseifconstruct
     | /* vacío */
-    :
+    ;
 
 /* Eliminado *
 * elseif: (elseseq | ε)
@@ -69,7 +70,7 @@ elseconstruct:
 
 elseseq:
     ELSE
-    stmtsequence {}
+    stmtsequence 
     ;
 
 /* Eliminado *
@@ -97,22 +98,22 @@ assigconstruct:
     ;
 
 assignopts:
-    "=" expr 
-    | "++" 
-    | "--"
+    '=' expr 
+    | INCREMENTO
+    | DECREMENTO
 
 /*
 *
 */
 expr:
-    expr "+" multexp
-    expr "-" multexp
+    expr '+' multexp
+    expr '-' multexp
     | multexp
     ;
 
 multexp:
-    multexp "*" value
-    | multexp "/" value
+    multexp '*' value
+    | multexp '/' value
     | value
     ;
 

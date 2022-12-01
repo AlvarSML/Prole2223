@@ -20,14 +20,17 @@ identificador (({letra}|\_)({letra}|{digito}|{simbolo})*)
 %%
 
 {digitos} {yylval = atoi(yytext); return NUM;}
-{identificado} {yylval = atoi(yytext); return ID;}
-"if" {return IF;}
-"then" {return THEN;}
-"elseif" {return ELSEIF;}
-"else" {return ELSE;}
-"endif" {return ENDIF;}
-"while" {return WHILE;}
-"do" {return DO;}
+{identificador} {yylval = atoi(yytext); return ID;}
+'if' {return IF;}
+'then' {return THEN;}
+'elseif' {return ELSEIF;}
+'else' {return ELSE;}
+'endif' {return ENDIF;}
+'while' {return WHILE;}
+'endwhile' {return ENDWHILE;}
+'incremento' {return INCREMENTO;}
+'decremento' {return DECREMENTO;}
+'print' {return PRINT;}
 
 
 %%

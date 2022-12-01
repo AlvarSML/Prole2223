@@ -16,6 +16,7 @@ if [ $? -eq 1 ]; then
     echo $res
     return 1
 fi
+echo "- [Flex] Compilacion con exito"
 
 if [ $# -gt 1 ]; then
     # si se ha pasasdo un .l y .y
@@ -29,8 +30,9 @@ res=$(bison -yd $arch)
 if [ $? -eq 1 ]; then
     echo "- [Bison] Error de compilacion"
     echo $res
-    return 1
+    exit 1
 fi
+echo "- [Bison] Compilacion con exito"
 
 if [ $# -gt 2 ]; then
     # si se ha pasasdo un archivo para el output
@@ -43,12 +45,8 @@ fi
 if [ $? -eq 1 ]; then
     echo "- [C] Error de compilacion"
     echo $res
-    return 1
 else
     echo "- [*] Compilado con exito"
-    return 0
 fi
 
-
-
-exit
+exit $?
