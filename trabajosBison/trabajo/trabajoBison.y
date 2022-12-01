@@ -3,36 +3,120 @@
 int yyerror(char *);
 %}
 
-%token 
+%token IF THEN ELSEIF ELSE WHILE DO ENDIF
 %%
 
-stmtsequence : programstmt  |  programstmt stmtsequence;
+stmtsequence:
+    programstmt  
+    |  programstmt stmtsequence
+    ;
 
-programstmt : assigconstruct
-            |  loopconstruct
-            |  ifconstruct
-            |  printstmt;
+programstmt: 
+    assigconstruct
+    |  loopconstruct
+    |  ifconstruct
+    |  printstmt;
 
-loopconstruct : WHILE '(' expr ')' stmtsequence ENDWHILE;
+loopconstruct: WHILE
+    '('
+    expr
+    ')'
+    stmtsequence
+    ENDWHILE
+    ;
 
-ifconstruct : ifthenstmt stmtsequence (elseifconstruct)* (elseconstruct)? ENDIF;
+/* cambiado para quitar los * y ? */
+ifconstruct: 
+    ifthenstmt 
+    stmtsequence 
+    elseifconstruct
+    elseconstruct
+    ENDIF
+    ;
 
-ifthenstmt : IF '(' expr ')' THEN;
+ifthenstmt:
+    IF
+    '('
+    expr
+    ')'
+    THEN
+    ;
 
-elseifconstruct : ELSEIF '(' expr ')' THEN stmtsequence;
+/* elseif: ELSEIF(expr) THEN stmt elseiffinal */
+elseifconstruct:
+    ELSEIF
+    '('
+    expr
+    ')'
+    THEN
+    stmtsequence {}
+    elseiffinal
+    ;
 
-elseconstruct : ELSE stmtsequence;
+elseiffinal:
+    elseifconstruct
+    | /* vacío */
+    :
 
-printstmt : PRINT expr (',' expr)*;
+/* Eliminado *
+* elseif: (elseseq | ε)
+* elseseq: ELSE stmtsequence
+*/
+elseconstruct:
+    elseseq
+    | /* vacío */ 
+    ;
 
-assigconstruct: ID '=' expr 
-    |  ID '++' 
-    |  ID '--';
+elseseq:
+    ELSE
+    stmtsequence {}
+    ;
 
-assigconstruct: ID ('=' expr |'++'|'--' );
+/* Eliminado *
+* printstmt: PRINT expr printexprs
+* printexprs: "," expr | ε
+*/
+printstmt:
+    PRINT
+    expr
+    printexprs
+    ;
 
-expr : expr ('+' | '-' ) multexp | multexp;
+printexprs:
+    ',' expr
+    | /* vacio */
+    ;
 
-multexp : multexp ('*'| '/') value | value;
+/*
+* assigconstruct: ID assignopts
+* assignopts: "=" expr | "++" | "--"
+*/
+assigconstruct: 
+    ID
+    assignopts
+    ;
 
-value : '(' expr ')' | NUM | ID;
+assignopts:
+    "=" expr 
+    | "++" 
+    | "--"
+
+/*
+*
+*/
+expr:
+    expr "+" multexp
+    expr "-" multexp
+    | multexp
+    ;
+
+multexp:
+    multexp "*" value
+    | multexp "/" value
+    | value
+    ;
+
+value:
+    '(' expr ')'
+    | NUM
+    | ID;
