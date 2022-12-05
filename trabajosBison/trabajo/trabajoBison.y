@@ -1,10 +1,24 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+
 int yyerror(char *);
+
+FILE *yyin;
 %}
 
-%token ID NUM IF THEN ELSEIF ELSE WHILE ENDWHILE ENDIF INCREMENTO DECREMENTO PRINT
+%union {
+    int numero;
+    char* string;
+}
+
+%start stmtsequence
+%token IF THEN ELSEIF ELSE WHILE ENDWHILE ENDIF INCREMENTO DECREMENTO PRINT
+%token <string> ID
+%token <numero> NUM
+
+%left '+' '-'
+%left '*'
 %%
 
 stmtsequence:
@@ -93,8 +107,8 @@ printexprs:
 * assignopts: "=" expr | "++" | "--"
 */
 assigconstruct: 
-    ID
-    assignopts
+    ID { printf("\t valori %d\n" , $1 ); }
+    assignopts 
     ;
 
 assignopts:
@@ -121,3 +135,19 @@ value:
     '(' expr ')'
     | NUM
     | ID;
+
+%%
+
+int yyerror(char *s){printf("%s\n",s);}
+
+int main( int argc, char **argv ){
+    ++argv, --argc;	/* skip over program name */
+    int prueba = 0;
+
+	if ( argc > 0 )
+	    yyin = fopen( argv[0], "r" );
+	else
+	    yyin = stdin;
+    
+    yyparse();
+}

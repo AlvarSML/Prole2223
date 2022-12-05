@@ -14,7 +14,7 @@ res=$(flex $arch)
 if [ $? -eq 1 ]; then
     echo "- [Flex] Error de compilacion"
     echo $res
-    return 1
+    exit 1
 fi
 echo "- [Flex] Compilacion con exito"
 
@@ -25,7 +25,7 @@ else
     arch="*.y"
 fi
 
-res=$(bison -yd $arch)
+res=$(bison -yd $arch -b documento )
 
 if [ $? -eq 1 ]; then
     echo "- [Bison] Error de compilacion"
@@ -37,9 +37,9 @@ echo "- [Bison] Compilacion con exito"
 if [ $# -gt 2 ]; then
     # si se ha pasasdo un archivo para el output
     arch=$3
-    res=$(gcc lex.yy.c y.tab.c -o $arch -lfl)
+    res=$(gcc lex.yy.c y.tab.c -o $arch -lfl -DYYDEBUG)
 else
-    res=$(gcc lex.yy.c y.tab.c -lfl)
+    res=$(gcc lex.yy.c y.tab.c -lfl -DYYDEBUG)
 fi
 
 if [ $? -eq 1 ]; then

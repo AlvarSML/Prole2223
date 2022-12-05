@@ -75,7 +75,7 @@ int yyerror(char *);
 
 FILE *yyin;
 
-#line 79 "y.tab.c"
+#line 79 "documento.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -108,8 +108,8 @@ FILE *yyin;
 
 /* Use api.header.include to #include this header
    instead of duplicating it here.  */
-#ifndef YY_YY_Y_TAB_H_INCLUDED
-# define YY_YY_Y_TAB_H_INCLUDED
+#ifndef YY_YY_DOCUMENTO_TAB_H_INCLUDED
+# define YY_YY_DOCUMENTO_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -160,7 +160,7 @@ union YYSTYPE
     int numero;
     char* string;
 
-#line 164 "y.tab.c"
+#line 164 "documento.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -173,7 +173,7 @@ extern YYSTYPE yylval;
 
 int yyparse (void);
 
-#endif /* !YY_YY_Y_TAB_H_INCLUDED  */
+#endif /* !YY_YY_DOCUMENTO_TAB_H_INCLUDED  */
 
 
 
@@ -1369,11 +1369,11 @@ yyreduce:
   case 20:
 #line 110 "trabajoBison.y"
        { printf("\t valori %d\n" , (yyvsp[0].string) ); }
-#line 1373 "y.tab.c"
+#line 1373 "documento.tab.c"
     break;
 
 
-#line 1377 "y.tab.c"
+#line 1377 "documento.tab.c"
 
       default: break;
     }

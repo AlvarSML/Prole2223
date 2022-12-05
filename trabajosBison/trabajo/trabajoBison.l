@@ -1,6 +1,7 @@
 
 %{
 #include "y.tab.h"
+#include <string.h>
 int yydebug = 1;
 %}
 
@@ -19,8 +20,8 @@ identificador (({letra}|\_)({letra}|{digito}|{simbolo})*)
 
 %%
 
-{digitos} {yylval = atoi(yytext); return NUM;}
-{identificador} {yylval = atoi(yytext); return ID;}
+{digitos} {yylval.numero = atoi(yytext); return NUM;}
+{identificador} {yylval.string = strdup(yytext); return ID;}
 'if' {return IF;}
 'then' {return THEN;}
 'elseif' {return ELSEIF;}
@@ -34,3 +35,4 @@ identificador (({letra}|\_)({letra}|{digito}|{simbolo})*)
 
 
 %%
+

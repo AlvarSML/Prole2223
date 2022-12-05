@@ -481,9 +481,10 @@ char *yytext;
 #line 1 "trabajoBison.l"
 #line 3 "trabajoBison.l"
 #include "y.tab.h"
+#include <string.h>
 int yydebug = 1;
-#line 486 "lex.yy.c"
 #line 487 "lex.yy.c"
+#line 488 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -700,10 +701,10 @@ YY_DECL
 		}
 
 	{
-#line 20 "trabajoBison.l"
+#line 21 "trabajoBison.l"
 
 
-#line 707 "lex.yy.c"
+#line 708 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -762,70 +763,70 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 22 "trabajoBison.l"
-{yylval = atoi(yytext); return NUM;}
+#line 23 "trabajoBison.l"
+{yylval.numero = atoi(yytext); return NUM;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 23 "trabajoBison.l"
-{yylval = atoi(yytext); return ID;}
+#line 24 "trabajoBison.l"
+{yylval.string = strdup(yytext); return ID;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 24 "trabajoBison.l"
+#line 25 "trabajoBison.l"
 {return IF;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 25 "trabajoBison.l"
+#line 26 "trabajoBison.l"
 {return THEN;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 26 "trabajoBison.l"
+#line 27 "trabajoBison.l"
 {return ELSEIF;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 27 "trabajoBison.l"
+#line 28 "trabajoBison.l"
 {return ELSE;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 28 "trabajoBison.l"
+#line 29 "trabajoBison.l"
 {return ENDIF;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 29 "trabajoBison.l"
+#line 30 "trabajoBison.l"
 {return WHILE;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 30 "trabajoBison.l"
+#line 31 "trabajoBison.l"
 {return ENDWHILE;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 31 "trabajoBison.l"
+#line 32 "trabajoBison.l"
 {return INCREMENTO;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 32 "trabajoBison.l"
+#line 33 "trabajoBison.l"
 {return DECREMENTO;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 33 "trabajoBison.l"
+#line 34 "trabajoBison.l"
 {return PRINT;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 36 "trabajoBison.l"
+#line 37 "trabajoBison.l"
 ECHO;
 	YY_BREAK
-#line 829 "lex.yy.c"
+#line 830 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1830,5 +1831,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 36 "trabajoBison.l"
+#line 37 "trabajoBison.l"
+
+
 

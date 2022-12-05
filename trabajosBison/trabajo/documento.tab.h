@@ -34,8 +34,8 @@
 /* Undocumented macros, especially those whose name start with YY_,
    are private implementation details.  Do not rely on them.  */
 
-#ifndef YY_YY_Y_TAB_H_INCLUDED
-# define YY_YY_Y_TAB_H_INCLUDED
+#ifndef YY_YY_DOCUMENTO_TAB_H_INCLUDED
+# define YY_YY_DOCUMENTO_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -86,7 +86,7 @@ union YYSTYPE
     int numero;
     char* string;
 
-#line 90 "y.tab.h"
+#line 90 "documento.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -99,4 +99,4 @@ extern YYSTYPE yylval;
 
 int yyparse (void);
 
-#endif /* !YY_YY_Y_TAB_H_INCLUDED  */
+#endif /* !YY_YY_DOCUMENTO_TAB_H_INCLUDED  */
