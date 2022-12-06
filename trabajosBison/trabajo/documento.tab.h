@@ -59,8 +59,13 @@ extern int yydebug;
     INCREMENTO = 265,
     DECREMENTO = 266,
     PRINT = 267,
-    ID = 268,
-    NUM = 269
+    ASIGNA = 268,
+    MAS = 269,
+    MENOS = 270,
+    POR = 271,
+    ENTRE = 272,
+    ID = 273,
+    NUM = 274
   };
 #endif
 /* Tokens.  */
@@ -74,8 +79,13 @@ extern int yydebug;
 #define INCREMENTO 265
 #define DECREMENTO 266
 #define PRINT 267
-#define ID 268
-#define NUM 269
+#define ASIGNA 268
+#define MAS 269
+#define MENOS 270
+#define POR 271
+#define ENTRE 272
+#define ID 273
+#define NUM 274
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -86,7 +96,7 @@ union YYSTYPE
     int numero;
     char* string;
 
-#line 90 "documento.tab.h"
+#line 100 "documento.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

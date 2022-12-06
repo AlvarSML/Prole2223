@@ -2,6 +2,8 @@
 # se asume que primero se mete el .l y luego el .y
 # el .l y el .y se llaman igual
 
+$(rm a.out lex.yy.c y.tab.c y.tab.h)
+
 if [ $# -gt 0 ]; then
     # si solo se pasa el nomnre del .l
     arch=$1
@@ -25,7 +27,7 @@ else
     arch="*.y"
 fi
 
-res=$(bison -yd $arch -b documento )
+res=$(bison -yd $arch )
 
 if [ $? -eq 1 ]; then
     echo "- [Bison] Error de compilacion"

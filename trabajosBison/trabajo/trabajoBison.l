@@ -20,19 +20,23 @@ identificador (({letra}|\_)({letra}|{digito}|{simbolo})*)
 
 %%
 
+[ \t\r\n] ;
 {digitos} {yylval.numero = atoi(yytext); return NUM;}
 {identificador} {yylval.string = strdup(yytext); return ID;}
-'if' {return IF;}
-'then' {return THEN;}
-'elseif' {return ELSEIF;}
-'else' {return ELSE;}
-'endif' {return ENDIF;}
-'while' {return WHILE;}
-'endwhile' {return ENDWHILE;}
-'incremento' {return INCREMENTO;}
-'decremento' {return DECREMENTO;}
-'print' {return PRINT;}
-
-
+"if" {return IF;}
+"then" {return THEN;}
+"elseif" {return ELSEIF;}
+"else" {return ELSE;}
+"endif" {return ENDIF;}
+"while" {return WHILE;}
+"endwhile" {return ENDWHILE;}
+"incremento" {return INCREMENTO;}
+"decremento" {return DECREMENTO;}
+"print" {return PRINT;}
+"=" {return ASIGNA;}
+"+" {return MAS;}
+"-" {return MENOS;}
+"*" {return POR;}
+"/" {return ENTRE;}
 %%
 

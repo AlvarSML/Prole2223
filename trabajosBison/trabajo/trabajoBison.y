@@ -13,12 +13,9 @@ FILE *yyin;
 }
 
 %start stmtsequence
-%token IF THEN ELSEIF ELSE WHILE ENDWHILE ENDIF INCREMENTO DECREMENTO PRINT
+%token IF THEN ELSEIF ELSE WHILE ENDWHILE ENDIF INCREMENTO DECREMENTO PRINT ASIGNA MAS MENOS POR ENTRE
 %token <string> ID
 %token <numero> NUM
-
-%left '+' '-'
-%left '*'
 %%
 
 stmtsequence:
@@ -107,38 +104,56 @@ printexprs:
 * assignopts: "=" expr | "++" | "--"
 */
 assigconstruct: 
-    ID { printf("\t valori %d\n" , $1 ); }
-    assignopts 
+    ID 
+    assignopts { printf("\t # valori %s\n" , $<string>1 ); }
     ;
 
 assignopts:
-    '=' expr 
+    ASIGNA { printf("\t # asigna\n"); }
+    expr 
     | INCREMENTO
     | DECREMENTO
 
 /*
-*
+* expr: expr expropts multexpr
+* expropts: + | -
 */
 expr:
-    expr '+' multexp
-    expr '-' multexp
+    expr expropts multexp
     | multexp
     ;
 
+expropts:
+    MAS
+    | MENOS
+
+/*
+*
+*/
+
+
 multexp:
-    multexp '*' value
-    | multexp '/' value
-    | value
+    multexp POR value
+    | multexp ENTRE value
+    | value 
     ;
 
 value:
     '(' expr ')'
-    | NUM
-    | ID;
+    | NUM { printf("\t # mete %d\n", $<numero>1); }
+    | ID  { printf("\t # valord %s\n", $<string>1); }
+    ;
 
 %%
 
-int yyerror(char *s){printf("%s\n",s);}
+int yyerror(char *s){
+    extern int yylineno;
+    extern char *yytext;
+
+    fprintf(stderr, "%s en la linea %d cerca de: <%s>\n", s, yylineno, yytext);
+    exit(-1);
+
+    }
 
 int main( int argc, char **argv ){
     ++argv, --argc;	/* skip over program name */
