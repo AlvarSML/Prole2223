@@ -37,11 +37,19 @@ fi
 echo "- [Bison] Compilacion con exito"
 
 if [ $# -gt 2 ]; then
+    if [[ "$4" == "-d" ]]; then
+        arch=$3
+        res=$(gcc lex.yy.c y.tab.c -o $arch -lfl -DYYDEBUG)
+    fi
+
+    if [[ "$3" == "-d" ]]; then
+        res=$(gcc lex.yy.c y.tab.c -lfl -DYYDEBUG)
+    fi
     # si se ha pasasdo un archivo para el output
     arch=$3
-    res=$(gcc lex.yy.c y.tab.c -o $arch -lfl -DYYDEBUG)
+    res=$(gcc lex.yy.c y.tab.c -o $arch -lfl)
 else
-    res=$(gcc lex.yy.c y.tab.c -lfl -DYYDEBUG)
+    res=$(gcc lex.yy.c y.tab.c -lfl)
 fi
 
 if [ $? -eq 1 ]; then

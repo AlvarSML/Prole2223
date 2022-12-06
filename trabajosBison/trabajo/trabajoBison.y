@@ -128,14 +128,18 @@ expropts:
     | MENOS
 
 /*
-*
+* multexpr: 
+* multexpr opts:
 */
-
-
 multexp:
     multexp POR value
     | multexp ENTRE value
     | value 
+    ;
+
+multexpropts:
+    POR
+    | ENTRE
     ;
 
 value:
