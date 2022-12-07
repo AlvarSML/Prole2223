@@ -1,2 +1,6 @@
 *.java
 *.class
+trabajosBison/*/y.tab.c
+trabajosBison/*/y.tab.h
+trabajosBison/*/lex.yy.c
+
