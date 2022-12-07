@@ -1,1 +1,13 @@
-a = 9 + 8 * b
+
+if (a) then
+    a = 167
+elseif (b) then
+    b = 23
+elseif (c) then
+    c = 256
+elseif (d) then
+    d = 223
+else
+    x = 3
+endif
+

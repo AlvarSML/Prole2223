@@ -1,11 +1,3 @@
-Terminals unused in grammar
-
-    MAS
-    MENOS
-    POR
-    ENTRE
-
-
 Grammar
 
     0 $accept: stmtsequence $end
@@ -39,39 +31,37 @@ Grammar
    17 printexprs: ',' expr
    18           | %empty
 
-   19 assigconstruct: ID assignopts
+   19 $@1: %empty
 
-   20 $@1: %empty
+   20 assigconstruct: ID $@1 assignopts
 
-   21 assignopts: ASIGNA $@1 expr
+   21 assignopts: ASIGNA expr
    22           | INCREMENTO
    23           | DECREMENTO
 
    24 expr: expr expropts multexp
    25     | multexp
 
-   26 expropts: '+'
-   27         | '-'
+   26 expropts: MAS
+   27         | MENOS
 
-   28 multexp: multexp '*' value
-   29        | multexp '/' value
-   30        | value
+   28 multexp: multexp multexpropts value
+   29        | value
 
-   31 value: '(' expr ')'
-   32      | NUM
-   33      | ID
+   30 multexpropts: POR
+   31             | ENTRE
+
+   32 value: '(' expr ')'
+   33      | NUM
+   34      | ID
 
 
 Terminals, with rules where they appear
 
     $end (0) 0
-    '(' (40) 7 9 10 31
-    ')' (41) 7 9 10 31
-    '*' (42) 28
-    '+' (43) 26
+    '(' (40) 7 9 10 32
+    ')' (41) 7 9 10 32
     ',' (44) 17
-    '-' (45) 27
-    '/' (47) 29
     error (256)
     IF (258) 9
     THEN (259) 9 10
@@ -84,77 +74,91 @@ Terminals, with rules where they appear
     DECREMENTO (266) 23
     PRINT (267) 16
     ASIGNA (268) 21
-    MAS (269)
-    MENOS (270)
-    POR (271)
-    ENTRE (272)
-    ID <string> (273) 19 33
-    NUM <numero> (274) 32
+    MAS (269) 26
+    MENOS (270) 27
+    POR (271) 30
+    ENTRE (272) 31
+    ID <string> (273) 20 34
+    NUM <numero> (274) 33
 
 
 Nonterminals, with rules where they appear
 
-    $accept (27)
+    $accept (23)
         on left: 0
-    stmtsequence (28)
+    stmtsequence (24)
         on left: 1 2
         on right: 0 2 7 8 10 15
-    programstmt (29)
+    programstmt (25)
         on left: 3 4 5 6
         on right: 1 2
-    loopconstruct (30)
+    loopconstruct (26)
         on left: 7
         on right: 4
-    ifconstruct (31)
+    ifconstruct (27)
         on left: 8
         on right: 5
-    ifthenstmt (32)
+    ifthenstmt (28)
         on left: 9
         on right: 8
-    elseifconstruct (33)
+    elseifconstruct (29)
         on left: 10
         on right: 8 11
-    elseiffinal (34)
+    elseiffinal (30)
         on left: 11 12
         on right: 10
-    elseconstruct (35)
+    elseconstruct (31)
         on left: 13 14
         on right: 8
-    elseseq (36)
+    elseseq (32)
         on left: 15
         on right: 13
-    printstmt (37)
+    printstmt (33)
         on left: 16
         on right: 6
-    printexprs (38)
+    printexprs (34)
         on left: 17 18
         on right: 16
-    assigconstruct (39)
-        on left: 19
-        on right: 3
-    assignopts (40)
-        on left: 21 22 23
-        on right: 19
-    $@1 (41)
+    assigconstruct (35)
         on left: 20
-        on right: 21
-    expr (42)
+        on right: 3
+    $@1 (36)
+        on left: 19
+        on right: 20
+    assignopts (37)
+        on left: 21 22 23
+        on right: 20
+    expr (38)
         on left: 24 25
-        on right: 7 9 10 16 17 21 24 31
-    expropts (43)
+        on right: 7 9 10 16 17 21 24 32
+    expropts (39)
         on left: 26 27
         on right: 24
-    multexp (44)
-        on left: 28 29 30
-        on right: 24 25 28 29
-    value (45)
-        on left: 31 32 33
-        on right: 28 29 30
+    multexp (40)
+        on left: 28 29
+        on right: 24 25 28
+    multexpropts <string> (41)
+        on left: 30 31
+        on right: 28
+    value (42)
+        on left: 32 33 34
+        on right: 28 29
 
 
 State 0
 
     0 $accept: . stmtsequence $end
+    1 stmtsequence: . programstmt
+    2             | . programstmt stmtsequence
+    3 programstmt: . assigconstruct
+    4            | . loopconstruct
+    5            | . ifconstruct
+    6            | . printstmt
+    7 loopconstruct: . WHILE '(' expr ')' stmtsequence ENDWHILE
+    8 ifconstruct: . ifthenstmt stmtsequence elseifconstruct elseconstruct ENDIF
+    9 ifthenstmt: . IF '(' expr ')' THEN
+   16 printstmt: . PRINT expr printexprs
+   20 assigconstruct: . ID $@1 assignopts
 
     IF     shift, and go to state 1
     WHILE  shift, and go to state 2
@@ -187,6 +191,13 @@ State 2
 State 3
 
    16 printstmt: PRINT . expr printexprs
+   24 expr: . expr expropts multexp
+   25     | . multexp
+   28 multexp: . multexp multexpropts value
+   29        | . value
+   32 value: . '(' expr ')'
+   33      | . NUM
+   34      | . ID
 
     ID   shift, and go to state 14
     NUM  shift, and go to state 15
@@ -199,26 +210,36 @@ State 3
 
 State 4
 
-   19 assigconstruct: ID . assignopts
+   19 $@1: . %empty
+   20 assigconstruct: ID . $@1 assignopts
 
-    INCREMENTO  shift, and go to state 20
-    DECREMENTO  shift, and go to state 21
-    ASIGNA      shift, and go to state 22
+    $default  reduce using rule 19 ($@1)
 
-    assignopts  go to state 23
+    $@1  go to state 20
 
 
 State 5
 
     0 $accept: stmtsequence . $end
 
-    $end  shift, and go to state 24
+    $end  shift, and go to state 21
 
 
 State 6
 
-    1 stmtsequence: programstmt .
+    1 stmtsequence: . programstmt
+    1             | programstmt .
+    2             | . programstmt stmtsequence
     2             | programstmt . stmtsequence
+    3 programstmt: . assigconstruct
+    4            | . loopconstruct
+    5            | . ifconstruct
+    6            | . printstmt
+    7 loopconstruct: . WHILE '(' expr ')' stmtsequence ENDWHILE
+    8 ifconstruct: . ifthenstmt stmtsequence elseifconstruct elseconstruct ENDIF
+    9 ifthenstmt: . IF '(' expr ')' THEN
+   16 printstmt: . PRINT expr printexprs
+   20 assigconstruct: . ID $@1 assignopts
 
     IF     shift, and go to state 1
     WHILE  shift, and go to state 2
@@ -227,7 +248,7 @@ State 6
 
     $default  reduce using rule 1 (stmtsequence)
 
-    stmtsequence    go to state 25
+    stmtsequence    go to state 22
     programstmt     go to state 6
     loopconstruct   go to state 7
     ifconstruct     go to state 8
@@ -252,14 +273,25 @@ State 8
 
 State 9
 
-    8 ifconstruct: ifthenstmt . stmtsequence elseifconstruct elseconstruct ENDIF
+    1 stmtsequence: . programstmt
+    2             | . programstmt stmtsequence
+    3 programstmt: . assigconstruct
+    4            | . loopconstruct
+    5            | . ifconstruct
+    6            | . printstmt
+    7 loopconstruct: . WHILE '(' expr ')' stmtsequence ENDWHILE
+    8 ifconstruct: . ifthenstmt stmtsequence elseifconstruct elseconstruct ENDIF
+    8            | ifthenstmt . stmtsequence elseifconstruct elseconstruct ENDIF
+    9 ifthenstmt: . IF '(' expr ')' THEN
+   16 printstmt: . PRINT expr printexprs
+   20 assigconstruct: . ID $@1 assignopts
 
     IF     shift, and go to state 1
     WHILE  shift, and go to state 2
     PRINT  shift, and go to state 3
     ID     shift, and go to state 4
 
-    stmtsequence    go to state 26
+    stmtsequence    go to state 23
     programstmt     go to state 6
     loopconstruct   go to state 7
     ifconstruct     go to state 8
@@ -285,12 +317,19 @@ State 11
 State 12
 
     9 ifthenstmt: IF '(' . expr ')' THEN
+   24 expr: . expr expropts multexp
+   25     | . multexp
+   28 multexp: . multexp multexpropts value
+   29        | . value
+   32 value: . '(' expr ')'
+   33      | . NUM
+   34      | . ID
 
     ID   shift, and go to state 14
     NUM  shift, and go to state 15
     '('  shift, and go to state 16
 
-    expr     go to state 27
+    expr     go to state 24
     multexp  go to state 18
     value    go to state 19
 
@@ -298,39 +337,53 @@ State 12
 State 13
 
     7 loopconstruct: WHILE '(' . expr ')' stmtsequence ENDWHILE
+   24 expr: . expr expropts multexp
+   25     | . multexp
+   28 multexp: . multexp multexpropts value
+   29        | . value
+   32 value: . '(' expr ')'
+   33      | . NUM
+   34      | . ID
 
     ID   shift, and go to state 14
     NUM  shift, and go to state 15
     '('  shift, and go to state 16
 
-    expr     go to state 28
+    expr     go to state 25
     multexp  go to state 18
     value    go to state 19
 
 
 State 14
 
-   33 value: ID .
+   34 value: ID .
 
-    $default  reduce using rule 33 (value)
+    $default  reduce using rule 34 (value)
 
 
 State 15
 
-   32 value: NUM .
+   33 value: NUM .
 
-    $default  reduce using rule 32 (value)
+    $default  reduce using rule 33 (value)
 
 
 State 16
 
-   31 value: '(' . expr ')'
+   24 expr: . expr expropts multexp
+   25     | . multexp
+   28 multexp: . multexp multexpropts value
+   29        | . value
+   32 value: . '(' expr ')'
+   32      | '(' . expr ')'
+   33      | . NUM
+   34      | . ID
 
     ID   shift, and go to state 14
     NUM  shift, and go to state 15
     '('  shift, and go to state 16
 
-    expr     go to state 29
+    expr     go to state 26
     multexp  go to state 18
     value    go to state 19
 
@@ -338,186 +391,202 @@ State 16
 State 17
 
    16 printstmt: PRINT expr . printexprs
+   17 printexprs: . ',' expr
+   18           | . %empty
    24 expr: expr . expropts multexp
+   26 expropts: . MAS
+   27         | . MENOS
 
-    ','  shift, and go to state 30
-    '+'  shift, and go to state 31
-    '-'  shift, and go to state 32
+    MAS    shift, and go to state 27
+    MENOS  shift, and go to state 28
+    ','    shift, and go to state 29
 
     $default  reduce using rule 18 (printexprs)
 
-    printexprs  go to state 33
-    expropts    go to state 34
+    printexprs  go to state 30
+    expropts    go to state 31
 
 
 State 18
 
    25 expr: multexp .
-   28 multexp: multexp . '*' value
-   29        | multexp . '/' value
+   28 multexp: multexp . multexpropts value
+   30 multexpropts: . POR
+   31             | . ENTRE
 
-    '*'  shift, and go to state 35
-    '/'  shift, and go to state 36
+    POR    shift, and go to state 32
+    ENTRE  shift, and go to state 33
 
     $default  reduce using rule 25 (expr)
+
+    multexpropts  go to state 34
 
 
 State 19
 
-   30 multexp: value .
+   29 multexp: value .
 
-    $default  reduce using rule 30 (multexp)
+    $default  reduce using rule 29 (multexp)
 
 
 State 20
 
-   22 assignopts: INCREMENTO .
+   20 assigconstruct: ID $@1 . assignopts
+   21 assignopts: . ASIGNA expr
+   22           | . INCREMENTO
+   23           | . DECREMENTO
 
-    $default  reduce using rule 22 (assignopts)
+    INCREMENTO  shift, and go to state 35
+    DECREMENTO  shift, and go to state 36
+    ASIGNA      shift, and go to state 37
+
+    assignopts  go to state 38
 
 
 State 21
-
-   23 assignopts: DECREMENTO .
-
-    $default  reduce using rule 23 (assignopts)
-
-
-State 22
-
-   21 assignopts: ASIGNA . $@1 expr
-
-    $default  reduce using rule 20 ($@1)
-
-    $@1  go to state 37
-
-
-State 23
-
-   19 assigconstruct: ID assignopts .
-
-    $default  reduce using rule 19 (assigconstruct)
-
-
-State 24
 
     0 $accept: stmtsequence $end .
 
     $default  accept
 
 
-State 25
+State 22
 
     2 stmtsequence: programstmt stmtsequence .
 
     $default  reduce using rule 2 (stmtsequence)
 
 
-State 26
+State 23
 
     8 ifconstruct: ifthenstmt stmtsequence . elseifconstruct elseconstruct ENDIF
+   10 elseifconstruct: . ELSEIF '(' expr ')' THEN stmtsequence elseiffinal
 
-    ELSEIF  shift, and go to state 38
+    ELSEIF  shift, and go to state 39
 
-    elseifconstruct  go to state 39
+    elseifconstruct  go to state 40
+
+
+State 24
+
+    9 ifthenstmt: IF '(' expr . ')' THEN
+   24 expr: expr . expropts multexp
+   26 expropts: . MAS
+   27         | . MENOS
+
+    MAS    shift, and go to state 27
+    MENOS  shift, and go to state 28
+    ')'    shift, and go to state 41
+
+    expropts  go to state 31
+
+
+State 25
+
+    7 loopconstruct: WHILE '(' expr . ')' stmtsequence ENDWHILE
+   24 expr: expr . expropts multexp
+   26 expropts: . MAS
+   27         | . MENOS
+
+    MAS    shift, and go to state 27
+    MENOS  shift, and go to state 28
+    ')'    shift, and go to state 42
+
+    expropts  go to state 31
+
+
+State 26
+
+   24 expr: expr . expropts multexp
+   26 expropts: . MAS
+   27         | . MENOS
+   32 value: '(' expr . ')'
+
+    MAS    shift, and go to state 27
+    MENOS  shift, and go to state 28
+    ')'    shift, and go to state 43
+
+    expropts  go to state 31
 
 
 State 27
 
-    9 ifthenstmt: IF '(' expr . ')' THEN
-   24 expr: expr . expropts multexp
+   26 expropts: MAS .
 
-    ')'  shift, and go to state 40
-    '+'  shift, and go to state 31
-    '-'  shift, and go to state 32
-
-    expropts  go to state 34
+    $default  reduce using rule 26 (expropts)
 
 
 State 28
 
-    7 loopconstruct: WHILE '(' expr . ')' stmtsequence ENDWHILE
-   24 expr: expr . expropts multexp
+   27 expropts: MENOS .
 
-    ')'  shift, and go to state 41
-    '+'  shift, and go to state 31
-    '-'  shift, and go to state 32
-
-    expropts  go to state 34
+    $default  reduce using rule 27 (expropts)
 
 
 State 29
 
-   24 expr: expr . expropts multexp
-   31 value: '(' expr . ')'
-
-    ')'  shift, and go to state 42
-    '+'  shift, and go to state 31
-    '-'  shift, and go to state 32
-
-    expropts  go to state 34
-
-
-State 30
-
    17 printexprs: ',' . expr
+   24 expr: . expr expropts multexp
+   25     | . multexp
+   28 multexp: . multexp multexpropts value
+   29        | . value
+   32 value: . '(' expr ')'
+   33      | . NUM
+   34      | . ID
 
     ID   shift, and go to state 14
     NUM  shift, and go to state 15
     '('  shift, and go to state 16
 
-    expr     go to state 43
+    expr     go to state 44
     multexp  go to state 18
     value    go to state 19
 
 
-State 31
-
-   26 expropts: '+' .
-
-    $default  reduce using rule 26 (expropts)
-
-
-State 32
-
-   27 expropts: '-' .
-
-    $default  reduce using rule 27 (expropts)
-
-
-State 33
+State 30
 
    16 printstmt: PRINT expr printexprs .
 
     $default  reduce using rule 16 (printstmt)
 
 
-State 34
+State 31
 
    24 expr: expr expropts . multexp
+   28 multexp: . multexp multexpropts value
+   29        | . value
+   32 value: . '(' expr ')'
+   33      | . NUM
+   34      | . ID
 
     ID   shift, and go to state 14
     NUM  shift, and go to state 15
     '('  shift, and go to state 16
 
-    multexp  go to state 44
+    multexp  go to state 45
     value    go to state 19
 
 
-State 35
+State 32
 
-   28 multexp: multexp '*' . value
+   30 multexpropts: POR .
 
-    ID   shift, and go to state 14
-    NUM  shift, and go to state 15
-    '('  shift, and go to state 16
-
-    value  go to state 45
+    $default  reduce using rule 30 (multexpropts)
 
 
-State 36
+State 33
 
-   29 multexp: multexp '/' . value
+   31 multexpropts: ENTRE .
+
+    $default  reduce using rule 31 (multexpropts)
+
+
+State 34
+
+   28 multexp: multexp multexpropts . value
+   32 value: . '(' expr ')'
+   33      | . NUM
+   34      | . ID
 
     ID   shift, and go to state 14
     NUM  shift, and go to state 15
@@ -526,9 +595,30 @@ State 36
     value  go to state 46
 
 
+State 35
+
+   22 assignopts: INCREMENTO .
+
+    $default  reduce using rule 22 (assignopts)
+
+
+State 36
+
+   23 assignopts: DECREMENTO .
+
+    $default  reduce using rule 23 (assignopts)
+
+
 State 37
 
-   21 assignopts: ASIGNA $@1 . expr
+   21 assignopts: ASIGNA . expr
+   24 expr: . expr expropts multexp
+   25     | . multexp
+   28 multexp: . multexp multexpropts value
+   29        | . value
+   32 value: . '(' expr ')'
+   33      | . NUM
+   34      | . ID
 
     ID   shift, and go to state 14
     NUM  shift, and go to state 15
@@ -541,14 +631,24 @@ State 37
 
 State 38
 
+   20 assigconstruct: ID $@1 assignopts .
+
+    $default  reduce using rule 20 (assigconstruct)
+
+
+State 39
+
    10 elseifconstruct: ELSEIF . '(' expr ')' THEN stmtsequence elseiffinal
 
     '('  shift, and go to state 48
 
 
-State 39
+State 40
 
     8 ifconstruct: ifthenstmt stmtsequence elseifconstruct . elseconstruct ENDIF
+   13 elseconstruct: . elseseq
+   14              | . %empty
+   15 elseseq: . ELSE stmtsequence
 
     ELSE  shift, and go to state 49
 
@@ -558,16 +658,27 @@ State 39
     elseseq        go to state 51
 
 
-State 40
+State 41
 
     9 ifthenstmt: IF '(' expr ')' . THEN
 
     THEN  shift, and go to state 52
 
 
-State 41
+State 42
 
-    7 loopconstruct: WHILE '(' expr ')' . stmtsequence ENDWHILE
+    1 stmtsequence: . programstmt
+    2             | . programstmt stmtsequence
+    3 programstmt: . assigconstruct
+    4            | . loopconstruct
+    5            | . ifconstruct
+    6            | . printstmt
+    7 loopconstruct: . WHILE '(' expr ')' stmtsequence ENDWHILE
+    7              | WHILE '(' expr ')' . stmtsequence ENDWHILE
+    8 ifconstruct: . ifthenstmt stmtsequence elseifconstruct elseconstruct ENDIF
+    9 ifthenstmt: . IF '(' expr ')' THEN
+   16 printstmt: . PRINT expr printexprs
+   20 assigconstruct: . ID $@1 assignopts
 
     IF     shift, and go to state 1
     WHILE  shift, and go to state 2
@@ -583,68 +694,75 @@ State 41
     assigconstruct  go to state 11
 
 
-State 42
-
-   31 value: '(' expr ')' .
-
-    $default  reduce using rule 31 (value)
-
-
 State 43
 
-   17 printexprs: ',' expr .
-   24 expr: expr . expropts multexp
+   32 value: '(' expr ')' .
 
-    '+'  shift, and go to state 31
-    '-'  shift, and go to state 32
-
-    $default  reduce using rule 17 (printexprs)
-
-    expropts  go to state 34
+    $default  reduce using rule 32 (value)
 
 
 State 44
 
-   24 expr: expr expropts multexp .
-   28 multexp: multexp . '*' value
-   29        | multexp . '/' value
+   17 printexprs: ',' expr .
+   24 expr: expr . expropts multexp
+   26 expropts: . MAS
+   27         | . MENOS
 
-    '*'  shift, and go to state 35
-    '/'  shift, and go to state 36
+    MAS    shift, and go to state 27
+    MENOS  shift, and go to state 28
 
-    $default  reduce using rule 24 (expr)
+    $default  reduce using rule 17 (printexprs)
+
+    expropts  go to state 31
 
 
 State 45
 
-   28 multexp: multexp '*' value .
+   24 expr: expr expropts multexp .
+   28 multexp: multexp . multexpropts value
+   30 multexpropts: . POR
+   31             | . ENTRE
 
-    $default  reduce using rule 28 (multexp)
+    POR    shift, and go to state 32
+    ENTRE  shift, and go to state 33
+
+    $default  reduce using rule 24 (expr)
+
+    multexpropts  go to state 34
 
 
 State 46
 
-   29 multexp: multexp '/' value .
+   28 multexp: multexp multexpropts value .
 
-    $default  reduce using rule 29 (multexp)
+    $default  reduce using rule 28 (multexp)
 
 
 State 47
 
-   21 assignopts: ASIGNA $@1 expr .
+   21 assignopts: ASIGNA expr .
    24 expr: expr . expropts multexp
+   26 expropts: . MAS
+   27         | . MENOS
 
-    '+'  shift, and go to state 31
-    '-'  shift, and go to state 32
+    MAS    shift, and go to state 27
+    MENOS  shift, and go to state 28
 
     $default  reduce using rule 21 (assignopts)
 
-    expropts  go to state 34
+    expropts  go to state 31
 
 
 State 48
 
    10 elseifconstruct: ELSEIF '(' . expr ')' THEN stmtsequence elseiffinal
+   24 expr: . expr expropts multexp
+   25     | . multexp
+   28 multexp: . multexp multexpropts value
+   29        | . value
+   32 value: . '(' expr ')'
+   33      | . NUM
+   34      | . ID
 
     ID   shift, and go to state 14
     NUM  shift, and go to state 15
@@ -657,7 +775,18 @@ State 48
 
 State 49
 
+    1 stmtsequence: . programstmt
+    2             | . programstmt stmtsequence
+    3 programstmt: . assigconstruct
+    4            | . loopconstruct
+    5            | . ifconstruct
+    6            | . printstmt
+    7 loopconstruct: . WHILE '(' expr ')' stmtsequence ENDWHILE
+    8 ifconstruct: . ifthenstmt stmtsequence elseifconstruct elseconstruct ENDIF
+    9 ifthenstmt: . IF '(' expr ')' THEN
    15 elseseq: ELSE . stmtsequence
+   16 printstmt: . PRINT expr printexprs
+   20 assigconstruct: . ID $@1 assignopts
 
     IF     shift, and go to state 1
     WHILE  shift, and go to state 2
@@ -705,12 +834,14 @@ State 54
 
    10 elseifconstruct: ELSEIF '(' expr . ')' THEN stmtsequence elseiffinal
    24 expr: expr . expropts multexp
+   26 expropts: . MAS
+   27         | . MENOS
 
-    ')'  shift, and go to state 58
-    '+'  shift, and go to state 31
-    '-'  shift, and go to state 32
+    MAS    shift, and go to state 27
+    MENOS  shift, and go to state 28
+    ')'    shift, and go to state 58
 
-    expropts  go to state 34
+    expropts  go to state 31
 
 
 State 55
@@ -743,7 +874,18 @@ State 58
 
 State 59
 
+    1 stmtsequence: . programstmt
+    2             | . programstmt stmtsequence
+    3 programstmt: . assigconstruct
+    4            | . loopconstruct
+    5            | . ifconstruct
+    6            | . printstmt
+    7 loopconstruct: . WHILE '(' expr ')' stmtsequence ENDWHILE
+    8 ifconstruct: . ifthenstmt stmtsequence elseifconstruct elseconstruct ENDIF
+    9 ifthenstmt: . IF '(' expr ')' THEN
    10 elseifconstruct: ELSEIF '(' expr ')' THEN . stmtsequence elseiffinal
+   16 printstmt: . PRINT expr printexprs
+   20 assigconstruct: . ID $@1 assignopts
 
     IF     shift, and go to state 1
     WHILE  shift, and go to state 2
@@ -761,9 +903,12 @@ State 59
 
 State 60
 
-   10 elseifconstruct: ELSEIF '(' expr ')' THEN stmtsequence . elseiffinal
+   10 elseifconstruct: . ELSEIF '(' expr ')' THEN stmtsequence elseiffinal
+   10                | ELSEIF '(' expr ')' THEN stmtsequence . elseiffinal
+   11 elseiffinal: . elseifconstruct
+   12            | . %empty
 
-    ELSEIF  shift, and go to state 38
+    ELSEIF  shift, and go to state 39
 
     $default  reduce using rule 12 (elseiffinal)
 

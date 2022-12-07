@@ -8,7 +8,7 @@ int yydebug = 1;
 letra       [a-zA-Z]
 digito      [0-9]
 digitos     ({digito})+
-simbolo    [\_\-]
+simbolo    [\_]
 tabulador   \t
 blanco      [\t\n\r ]
 espacio     [\t\r ]
@@ -20,9 +20,6 @@ identificador (({letra}|\_)({letra}|{digito}|{simbolo})*)
 
 %%
 
-[ \t\r\n] ;
-{digitos} {yylval.numero = atoi(yytext); return NUM;}
-{identificador} {yylval.string = strdup(yytext); return ID;}
 "if" {return IF;}
 "then" {return THEN;}
 "elseif" {return ELSEIF;}
@@ -30,13 +27,18 @@ identificador (({letra}|\_)({letra}|{digito}|{simbolo})*)
 "endif" {return ENDIF;}
 "while" {return WHILE;}
 "endwhile" {return ENDWHILE;}
-"incremento" {return INCREMENTO;}
-"decremento" {return DECREMENTO;}
+"++" {return INCREMENTO;}
+"--" {return DECREMENTO;}
 "print" {return PRINT;}
 "=" {return ASIGNA;}
 "+" {return MAS;}
 "-" {return MENOS;}
 "*" {return POR;}
 "/" {return ENTRE;}
+"(" {return OPAR;}
+")" {return CPAR;}
+{digitos} {yylval.numero = atoi(yytext); return NUM;}
+{identificador} {yylval.string = strdup(yytext); return ID;}
+[ \t\r\n] ;
 %%
 

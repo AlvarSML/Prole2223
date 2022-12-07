@@ -64,8 +64,10 @@ extern int yydebug;
     MENOS = 270,
     POR = 271,
     ENTRE = 272,
-    ID = 273,
-    NUM = 274
+    OPAR = 273,
+    CPAR = 274,
+    ID = 275,
+    NUM = 276
   };
 #endif
 /* Tokens.  */
@@ -84,19 +86,22 @@ extern int yydebug;
 #define MENOS 270
 #define POR 271
 #define ENTRE 272
-#define ID 273
-#define NUM 274
+#define OPAR 273
+#define CPAR 274
+#define ID 275
+#define NUM 276
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 10 "trabajoBison.y"
+#line 21 "trabajoBison.y"
 
     int numero;
-    char* string;
+    int etiqueta;  
+    char* string;    
 
-#line 100 "y.tab.h"
+#line 105 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
