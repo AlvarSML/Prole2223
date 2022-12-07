@@ -1,21 +1,34 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+#define YYERROR_VERBOSE 1
 
 int yyerror(char *);
+
+int getNextNumber()
+{
+   static int nextNumber=-1;
+   return ++nextNumber;
+}
 
 FILE *yyin;
 %}
 
+ /* Numero y etiqueta tienen el mismo tipo para mejorar la legibilidad */
+
 %union {
     int numero;
-    char* string;
+    int etiqueta;  
+    char* string;    
 }
 
 %start stmtsequence
-%token IF THEN ELSEIF ELSE WHILE ENDWHILE ENDIF INCREMENTO DECREMENTO PRINT ASIGNA MAS MENOS POR ENTRE
+%token IF THEN ELSEIF ELSE WHILE ENDWHILE ENDIF INCREMENTO DECREMENTO PRINT ASIGNA MAS MENOS POR ENTRE OPAR CPAR
 %token <string> ID
 %token <numero> NUM
+
 %%
 
 stmtsequence:
@@ -29,45 +42,68 @@ programstmt:
     |  ifconstruct
     |  printstmt;
 
-loopconstruct: WHILE
-    '('
-    expr
-    ')'
+loopconstruct: 
+    WHILE {$<etiqueta>$ = getNextNumber(); printf("LBL%d\n",$<etiqueta>$);}
+    OPAR
+    expr 
+    CPAR { $<etiqueta>$ = getNextNumber(); printf("\t # sifalso vea LBL%d\n",$<etiqueta>$); }
     stmtsequence
-    ENDWHILE
+    ENDWHILE {printf("\t # vea LBL%d\n",$<etiqueta>2);printf("LBL %d\n",$<etiqueta>6);}
     ;
 
 /* cambiado para quitar los * y ? */
 ifconstruct: 
     ifthenstmt 
+    { 
+        $<etiqueta>$ = getNextNumber(); // etiqueta del siguiente else/elsif
+        printf("\t # sifalso vea LBL%d\n",$<etiqueta>$); 
+    }
     stmtsequence 
-    elseifconstruct
+    { 
+        $<etiqueta>$ = getNextNumber(); // etiqueta del final
+        printf("\t # vea LBL%d\n",$<etiqueta>$); 
+        printf("LBL %d\n",$<etiqueta>2);
+    }
+    { 
+        $<etiqueta>$ = $<etiqueta>4; // se fija en el tope de pila para poder ser accedido por el primer elseif
+    }
+    elseifconstruct 
     elseconstruct
-    ENDIF
+    ENDIF { printf("Finif LBL%d\n",$<etiqueta>4); }
     ;
 
 ifthenstmt:
-    IF
-    '('
+    IF 
+    OPAR
     expr
-    ')'
+    CPAR
     THEN
     ;
 
 /* elseif: ELSEIF(expr) THEN stmt elseiffinal */
 elseifconstruct:
-    ELSEIF
-    '('
-    expr
-    ')'
-    THEN
-    stmtsequence 
-    elseiffinal
+    { 
+        $<etiqueta>$ = $<etiqueta>0;
+    }
+    {$<etiqueta>$ = getNextNumber();} /*Se obtiene el siguiente elseif -6 */
+    ELSEIF // -5
+    OPAR // -4
+    expr // -3
+    CPAR // -2
+    THEN // -1
+    { printf("\t # sifalso vea LBL%d\n",$<etiqueta>2); } // 
+    stmtsequence // 0
+    { printf("\t # vea fin LBL%d\n",$<etiqueta>1); 
+    printf("Elseif LBL%d\n",$<etiqueta>2); }
+    { $<etiqueta>$ = $<etiqueta>1;}
+    elseiffinal    
     ;
 
 elseiffinal:
-    elseifconstruct
-    | /* vacío */
+    | { 
+        $<etiqueta>$ = $<etiqueta>0;
+    } 
+       elseifconstruct
     ;
 
 /* Eliminado *
@@ -76,7 +112,7 @@ elseiffinal:
 */
 elseconstruct:
     elseseq
-    | /* vacío */ 
+    | 
     ;
 
 elseseq:
@@ -104,46 +140,38 @@ printexprs:
 * assignopts: "=" expr | "++" | "--"
 */
 assigconstruct: 
-    ID 
-    assignopts { printf("\t # valori %s\n" , $<string>1 ); }
+    ID { printf("\t # valori %s\n" , $<string>1 ); }
+    assignopts 
     ;
 
 assignopts:
-    ASIGNA { printf("\t # asigna\n"); }
-    expr 
-    | INCREMENTO
-    | DECREMENTO
-
+    ASIGNA 
+    expr { printf("\t # asigna\n"); }
+    | INCREMENTO { printf("\t # mete 1\n\t # valord %s\n\t # suma \n\t # asinga\n",$<string>-1); }
+    | DECREMENTO { printf("\t # mete 1\n\t # valord %s\n\t # resta \n\t # asinga\n",$<string>-1); }
+    | error
+    ;
 /*
 * expr: expr expropts multexpr
 * expropts: + | -
 */
 expr:
-    expr expropts multexp
+    expr MAS multexp { printf("\t # suma \n"); }
+    | expr MENOS multexp { printf("\t # resta \n"); }
     | multexp
     ;
-
-expropts:
-    MAS
-    | MENOS
-
 /*
-* multexpr: 
-* multexpr opts:
+* multexpr: multexpr multexpropts value | value
+* multexpr opts: * | /
 */
 multexp:
-    multexp POR value
-    | multexp ENTRE value
+    multexp POR value { printf("\t # multi \n"); }
+    | multexp ENTRE value { printf("\t # div \n"); }
     | value 
     ;
 
-multexpropts:
-    POR
-    | ENTRE
-    ;
-
 value:
-    '(' expr ')'
+    OPAR expr CPAR
     | NUM { printf("\t # mete %d\n", $<numero>1); }
     | ID  { printf("\t # valord %s\n", $<string>1); }
     ;
